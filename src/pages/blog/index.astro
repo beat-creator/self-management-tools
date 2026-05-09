@@ -1,0 +1,114 @@
+﻿---
+import Layout from '../../layouts/Layout.astro';
+
+// 1. Vite標準機能で全Markdownを読み込み
+const posts = import.meta.glob('./*.md', { eager: true });
+const allPosts = Object.values(posts) as any[];
+
+// 2. 日付順（新しい順）にソート
+const sortedPosts = allPosts.sort((a, b) => 
+  new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
+);
+
+// 3. ファイル名からスラッグを作るヘルパー
+const getSlug = (filePath: string) => filePath.split('/').pop()?.replace('.md', '');
+
+const title = "知のアーカイブ | セルフマネジメント・ツール集";
+const description = "集中力、マインドセット、効率化。自分を使いこなすための知見をストックしています。";
+---
+
+<Layout title={title} description={description}>
+	<main class="container">
+		<header class="page-header">
+			<nav class="breadcrumb">
+				<a href="/">TOP</a> <span>/</span> BLOG
+			</nav>
+			<h1>📚 Deep Dive Archives</h1>
+			<p>過去の知見を掘り起こし、自分をアップデートする。</p>
+		</header>
+		
+		<div class="blog-grid">
+			{sortedPosts.map(post => (
+				<a href={`/blog/${getSlug(post.file)}/`} class="blog-card">
+					<div class="card-image">
+						<img src={post.frontmatter.thumbnail || "/images/default-thumb.jpg"} alt="" />
+					</div>
+					<div class="card-content">
+						<span class="date">{post.frontmatter.date}</span>
+						<h2 class="item-title">{post.frontmatter.title}</h2>
+						<p class="item-desc">{post.frontmatter.description}</p>
+					</div>
+				</a>
+			))}
+		</div>
+
+		<div class="footer-nav">
+			<a href="/" class="back-home">← ツール集トップへ戻る</a>
+		</div>
+	</main>
+</Layout>
+
+<style>
+	/* レイアウト */
+	.container { max-width: 900px; margin: 0 auto; padding: 40px 20px 80px; }
+	
+	.page-header { text-align: center; margin-bottom: 60px; }
+	.breadcrumb { font-size: 0.75rem; font-weight: 800; color: #94a3b8; margin-bottom: 15px; letter-spacing: 0.1em; }
+	.breadcrumb a { color: #4f46e5; text-decoration: none; }
+	.breadcrumb a:hover { text-decoration: underline; }
+	.page-header h1 { font-size: 2.2rem; font-weight: 900; color: #0f172a; margin-bottom: 10px; }
+	.page-header p { color: #64748b; font-size: 1rem; }
+
+	/* グリッドレイアウト */
+	.blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+	
+	/* 記事カード */
+	.blog-card { 
+		background: white; 
+		border-radius: 24px; 
+		overflow: hidden; 
+		border: 1px solid #e2e8f0; 
+		text-decoration: none; 
+		color: inherit;
+		transition: all 0.3s ease;
+		box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+		display: flex;
+		flex-direction: column;
+	}
+	
+	.blog-card:hover { 
+		transform: translateY(-5px); 
+		box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); 
+		border-color: #4f46e5; 
+	}
+	
+	.card-image { width: 100%; height: 180px; background: #f1f5f9; overflow: hidden; }
+	.card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+	.blog-card:hover .card-image img { transform: scale(1.05); }
+	
+	.card-content { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+	.date { font-size: 0.75rem; color: #94a3b8; font-weight: 700; margin-bottom: 8px; }
+	.item-title { font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0 0 12px; line-height: 1.4; }
+	.item-desc { 
+		font-size: 0.85rem; 
+		color: #475569; 
+		line-height: 1.6; 
+		margin: 0;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	/* フッター導線 */
+	.footer-nav { margin-top: 80px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 40px; }
+	.back-home { 
+		display: inline-block; 
+		color: #4f46e5; 
+		text-decoration: none; 
+		font-weight: 800; 
+		font-size: 0.95rem;
+		transition: 0.2s;
+	}
+	.back-home:hover { color: #0f172a; transform: translateX(-5px); }
+</style>

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>N-Back Pro | ワーキングメモリ・脳トレ計算</title>
+    <style>
+        :root {
+            --bg: #f2f4f7; --text: #1c1c1e; --accent: #007aff;
+            --card: #ffffff; --success: #34c759; --danger: #ff3b30; --muted: #8e8e93;
+        }
+        body {
+            background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100svh; margin: 0; overflow: hidden; touch-action: manipulation; user-select: none;
+        }
+        .timer-bar-container { width: 100%; height: 6px; background: #ddd; position: absolute; top: 0; z-index: 1000; }
+        #timer-bar { width: 100%; height: 100%; background: var(--accent); transition: width 0.1s linear; }
+
+        .problem-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; gap: 15px; }
+        
+        .q-display { display: flex; align-items: baseline; gap: 12px; margin-bottom: 5px; }
+        .q-badge { color: var(--muted); font-size: 1.1rem; font-weight: bold; min-width: 45px; text-align: right; }
+        .formula-main { font-size: 3.4rem; font-weight: 900; color: var(--text); letter-spacing: -1px; }
+
+        .lower-box { 
+            text-align: center; padding: 18px 25px; background: var(--card); 
+            border-radius: 20px; width: 88%; max-width: 340px; border: 2px solid transparent;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: 0.3s;
+        }
+        .waiting-input { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 122, 255, 0.15); animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.75; } }
+
+        .formula-sub { font-size: 1.8rem; font-weight: bold; color: var(--muted); display: flex; align-items: baseline; justify-content: center; gap: 15px; }
+        .ans-badge { font-size: 1rem; color: var(--muted); font-weight: bold; min-width: 40px; text-align: right; }
+        .ans-target { font-size: 2.2rem; color: #ff9500; font-weight: 900; min-width: 30px; text-align: left; }
+
+        .num-pad {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+            width: 90vw; max-width: 360px; margin-bottom: 30px; padding: 10px;
+        }
+        .btn {
+            background: var(--card); border: none; border-radius: 12px;
+            color: var(--text); font-size: 1.8rem; font-weight: bold; padding: 16px 0; cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.06); -webkit-tap-highlight-color: transparent;
+        }
+        .btn:active { background: var(--text); color: white; }
+
+        /* スクリーン設定 */
+        .screen { position: absolute; inset: 0; background: var(--bg); z-index: 200; overflow-y: auto; }
+        .screen-content { min-height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; text-align: center; box-sizing: border-box; }
+        
+        .info-card { background: var(--card); border-radius: 20px; padding: 22px; width: 100%; max-width: 360px; margin: 20px 0; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.05); box-sizing: border-box; }
+        .info-card h2 { font-size: 17px; margin: 0 0 10px 0; color: var(--accent); border-bottom: 2px solid var(--bg); padding-bottom: 5px; }
+        .info-card p, .info-card li { font-size: 13.5px; line-height: 1.6; color: #444; margin-bottom: 10px; }
+        .info-card b { color: var(--text); }
+
+        .footer-guide { font-size: 12px; color: var(--muted); font-weight: bold; margin: 20px 0 40px 0; }
+
+        .start-btn { width: 100%; max-width: 300px; padding: 18px; font-size: 1.2rem; background: var(--text); color: white; border: none; border-radius: 18px; cursor: pointer; font-weight: 900; margin-bottom: 12px; }
+        .reset-btn { background: none; border: 1px solid #ccc; color: var(--muted); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="timer-bar-container"><div id="timer-bar"></div></div>
+
+    <div id="start-screen" class="screen">
+        <div class="screen-content">
+            <h1 style="margin-bottom: 5px; font-weight: 900;">N-Back計算</h1>
+            <div id="level-status" style="font-size: 1.3rem; color: var(--accent); font-weight: 900;">レベル 1</div>
+            <p id="level-desc" style="color: var(--muted); margin-bottom: 20px; font-weight: bold; font-size: 14px;">2-Back (通常速度)</p>
+            
+            <button class="start-btn" onclick="initGame()">トレーニング開始</button>
+            <button class="reset-btn" onclick="resetAll()">レベル1にリセット</button>
+
+            <div class="info-card">
+                <h2>N-Back計算とは？</h2>
+                <p>「脳のメモ帳」と呼ばれる<b>ワーキングメモリ（作業記憶）</b>を鍛えるための、科学的に裏付けられたトレーニングです。</p>
+                
+                <h2>鍛えるメリット</h2>
+                <ul>
+                    <li><b>マルチタスク能力の向上:</b> 仕事中、複数の情報を整理しやすくなります。</li>
+                    <li><b>学習効率アップ:</b> 読解力や論理的思考力が向上します。</li>
+                    <li><b>集中力と感情制御:</b> 注意をコントロールする力がつき、イライラしにくくなります。</li>
+                </ul>
+
+                <h2>ルールと使い方</h2>
+                <ul style="padding-left: 18px; margin: 0;">
+                    <li><b>問[n]:</b> 今出題されている最新の式です。</li>
+                    <li><b>答[n]:</b> 画面が青く光ったとき、<b>n問前の答え</b>を入力します。</li>
+                    <li><b>PC操作:</b> キーボードの<b>数字キー（0-9）</b>やテンキーで直接入力できます。</li>
+                </ul>
+            </div>
+            
+            <div class="footer-guide">↑ スクロールしてメリットをチェック</div>
+        </div>
+    </div>
+
+    <div class="problem-container">
+        <div class="q-display">
+            <div class="q-badge" id="q-num">問1</div>
+            <div class="formula-main" id="formula-mem">?+?=</div>
+        </div>
+
+        <div id="ans-box-ui" class="lower-box">
+            <div class="formula-sub">
+                <div class="ans-badge" id="a-num">答?</div>
+                <span id="formula-ans" style="letter-spacing: 1px;">???=</span>
+                <span id="ans-result" class="ans-target">?</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="num-pad">
+        <button class="btn" onclick="handleInput(1)">1</button>
+        <button class="btn" onclick="handleInput(2)">2</button>
+        <button class="btn" onclick="handleInput(3)">3</button>
+        <button class="btn" onclick="handleInput(4)">4</button>
+        <button class="btn" onclick="handleInput(5)">5</button>
+        <button class="btn" onclick="handleInput(6)">6</button>
+        <button class="btn" onclick="handleInput(7)">7</button>
+        <button class="btn" onclick="handleInput(8)">8</button>
+        <button class="btn" onclick="handleInput(9)">9</button>
+        <div style="visibility:hidden"></div>
+        <button class="btn" onclick="handleInput(0)">0</button>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function beep(f, d, type='sine') {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+            o.type = type; o.frequency.value = f; g.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + d);
+            o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + d);
+        }
+
+        let n = 2; let isHighSpeed = false; let questions = []; let hitCount = 0; let qIndex = 0; let isWaiting = false; let timerInterval;
+
+        const el = {
+            formulaMem: document.getElementById('formula-mem'),
+            formulaAns: document.getElementById('formula-ans'),
+            ansResult: document.getElementById('ans-result'),
+            qNum: document.getElementById('q-num'),
+            aNum: document.getElementById('a-num'),
+            ansBox: document.getElementById('ans-box-ui'),
+            bar: document.getElementById('timer-bar'),
+            startScreen: document.getElementById('start-screen'),
+            levelStatus: document.getElementById('level-status'),
+            levelDesc: document.getElementById('level-desc')
+        };
+
+        window.addEventListener('keydown', (e) => {
+            if (isWaiting) return;
+            if (e.key >= '0' && e.key <= '9') handleInput(parseInt(e.key));
+        });
+
+        function resetAll() { n = 2; isHighSpeed = false; updateMenu(); }
+        function updateMenu() {
+            el.levelStatus.innerText = `レベル ${isHighSpeed ? (n-1)*2 : (n-1)*2-1}`;
+            el.levelDesc.innerText = `${n}-Back ${isHighSpeed?'(高速)':'(通常速度)'}`;
+        }
+
+        function initGame() { 
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            el.startScreen.classList.add('hidden'); 
+            questions = []; hitCount = 0; qIndex = 0; 
+            nextStep(); 
+        }
+
+        async function nextStep() {
+            if (qIndex >= 20) { endGame(); return; }
+            isWaiting = true; 
+            el.bar.style.width = "100%";
+            el.ansBox.classList.remove('waiting-input');
+            el.ansResult.innerText = "?"; el.ansResult.style.color = "#ff9500";
+            el.formulaAns.innerText = "???=";
+            el.aNum.innerText = "答?";
+
+            const a = Math.floor(Math.random() * 5) + 1;
+            const b = Math.floor(Math.random() * 4) + 1;
+            let formula, ans;
+            if (Math.random() > 0.5) { formula = `${a}+${b}=`; ans = a+b; }
+            else { formula = `${a+b}-${a}=`; ans = b; }
+
+            questions.push({ formula, ans });
+            el.formulaMem.innerText = formula;
+            el.qNum.innerText = `問${questions.length}`;
+            
+            const interval = isHighSpeed ? 2500 : 4000;
+
+            if (questions.length <= n) {
+                setTimeout(nextStep, interval);
+            } else {
+                el.aNum.innerText = `答${qIndex + 1}`;
+                el.ansBox.classList.add('waiting-input'); 
+                isWaiting = false; 
+                startTimer(interval - 300);
+            }
+        }
+
+        function startTimer(ms) {
+            let start = Date.now(); clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                let pct = 100 - ((Date.now() - start) / ms * 100);
+                el.bar.style.width = Math.max(0, pct) + "%";
+                if (pct <= 0) { clearInterval(timerInterval); handleInput(-1); }
+            }, 50);
+        }
+
+        function handleInput(val) {
+            if (isWaiting) return; isWaiting = true; clearInterval(timerInterval);
+            el.ansBox.classList.remove('waiting-input');
+            const target = questions[qIndex].ans;
+            const isCorrect = (val === target);
+            el.formulaAns.innerText = questions[qIndex].formula;
+            el.ansResult.innerText = target; 
+            el.ansResult.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
+            if (isCorrect) { hitCount++; beep(880, 0.1); } else { beep(220, 0.3, 'sawtooth'); }
+            setTimeout(() => { qIndex++; nextStep(); }, 1000); 
+        }
+
+        function endGame() {
+            const score = Math.floor((hitCount / 20) * 100);
+            alert(`終了！ 正解数: ${hitCount}/20 (${score}%)`);
+            if (score >= 80) { if (!isHighSpeed) isHighSpeed = true; else { n++; isHighSpeed = false; }
+            } else if (score < 60) { if (isHighSpeed) isHighSpeed = false; else if (n > 2) { n--; isHighSpeed = true; }
+            }
+            updateMenu();
+            el.startScreen.classList.remove('hidden');
+            el.startScreen.scrollTo(0,0);
+        }
+    </script>
+</body>
+</html>

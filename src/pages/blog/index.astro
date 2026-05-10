@@ -5,12 +5,25 @@ import Layout from '../../layouts/Layout.astro';
 const posts = import.meta.glob('./*.md', { eager: true });
 const allPosts = Object.values(posts) as any[];
 
-// 2. 日付順（新しい順）にソート
+// 2. 日付を安全に数値化する関数（日本語形式対応・空データ対策）
+const parseDate = (dateStr: string) => {
+  if (!dateStr) return 0; // 日付がないものは一番下に
+
+  const match = dateStr.match(/(\d+)年(\d+)月(\d+)日/);
+  if (match) {
+    return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3])).getTime();
+  }
+  
+  const timestamp = new Date(dateStr).getTime();
+  return isNaN(timestamp) ? 0 : timestamp;
+};
+
+// 3. 日付順（新しい順）にソート
 const sortedPosts = allPosts.sort((a, b) => 
-  new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
+  parseDate(b.frontmatter.date) - parseDate(a.frontmatter.date)
 );
 
-// 3. ファイル名からスラッグを作るヘルパー
+// 4. ファイル名からスラッグを作るヘルパー
 const getSlug = (filePath: string) => filePath.split('/').pop()?.replace('.md', '');
 
 const title = "知のアーカイブ | セルフマネジメント・ツール集";

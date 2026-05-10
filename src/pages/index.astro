@@ -1,21 +1,29 @@
 ﻿---
 import Layout from '../layouts/Layout.astro';
 
-// 1. Viteの標準機能でMarkdownを読み込む（Astro2変換バグ対策済）
+// 1. Markdownを読み込む
 const posts = import.meta.glob('./blog/*.md', { eager: true });
 const allPosts = Object.values(posts) as any[];
 
-// 2. 日付順にソート
+// 2. 日付順にソート（日本の日付形式 "2026年5月10日" を解析できるように調整）
+const parseDate = (dateStr: string) => {
+  const match = dateStr.match(/(\d+)年(\d+)月(\d+)日/);
+  if (match) {
+    return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3])).getTime();
+  }
+  return new Date(dateStr).getTime();
+};
+
 const sortedPosts = allPosts.sort((a, b) => 
-  new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
+  parseDate(b.frontmatter.date) - parseDate(a.frontmatter.date)
 );
 
-// 3. ファイル名からスラッグを作る関数
+// 3. ファイル名からスラッグを作る
 const getSlug = (filePath: string) => filePath.split('/').pop()?.replace('.md', '');
 
-// 4. 推奨記事と最新記事の切り分け（リスト側からも除外しない設定）
-const featuredPost = sortedPosts.find(post => post.file.includes('concentration-tips'));
-const otherPosts = sortedPosts.slice(0, 5);
+// 4. 最新記事を Featured（一番大きい枠）にし、残りをリストに表示
+const featuredPost = sortedPosts[0]; // 常に最新をトップに
+const otherPosts = sortedPosts.slice(1, 6); // 2番目〜6番目をリストに表示
 
 const title = "地頭を鍛えて自分を使いこなす。知と実践のセルフマネジメント・ツール集";
 const description = "知を学び、その場で試す。人間の仕組みを知り、地頭を鍛えて自分を使いこなすためのサイトです。";

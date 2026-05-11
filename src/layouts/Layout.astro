@@ -10,6 +10,15 @@ const title = frontmatter?.title || Astro.props.title || "Self-Management Toolki
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/png" href="/icon-512.png" />
 		<title>{title}</title>
+
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-489DX1LV2M" is:inline></script>
+		<script is:inline>
+			window.dataLayer = window.dataLayer || [];
+			function gtag(){dataLayer.push(arguments);}
+			gtag('js', new Date());
+
+			gtag('config', 'G-489DX1LV2M');
+		</script>
 	</head>
 	<body>
 		<main class="content-wrapper">
@@ -44,7 +53,7 @@ const title = frontmatter?.title || Astro.props.title || "Self-Management Toolki
 </html>
 
 <style is:global>
-	/* デザインは維持（省略せずこのまま貼ってください） */
+	/* デザインは維持 */
 	body { font-family: sans-serif; line-height: 1.8; color: #333; background: #f9fbff; margin: 0; }
 	.content-wrapper { max-width: 800px; margin: 0 auto; padding: 40px 20px; background: white; min-height: 100vh; }
 	.post-header h1 { font-size: 2rem; color: #0f172a; text-align: center; margin-top: 0; }
@@ -58,12 +67,11 @@ const title = frontmatter?.title || Astro.props.title || "Self-Management Toolki
 	.app-link-box a { background: white !important; color: #4f46e5 !important; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 15px; }
 	.site-footer { margin-top: 60px; padding: 40px 0; text-align: center; border-top: 1px solid #e2e8f0; }
 	
-/* Layout.astro の style 内に追加 */
-img {
-    max-width: 100%;  /* 横幅が記事からはみ出さないようにする */
-    height: auto;     /* 縦横比を維持する */
-    display: block;   /* 下に余計な隙間を作らない */
-    margin: 30px auto; /* 上下に余白を作り、中央に寄せる */
-    border-radius: 12px; /* 元のデザインに合わせる */
-}
+	img {
+		max-width: 100%;
+		height: auto;
+		display: block;
+		margin: 30px auto;
+		border-radius: 12px;
+	}
 </style>

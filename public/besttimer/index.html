@@ -94,30 +94,7 @@
     <div id="page-help" class="content" style="display:none">
         <div class="info-section">
             <h1 class="info-title">集中タイマー</h1>
-            <p class="info-text">このツールは、高度な集中力を必要とするシーンにおいて、最適な作業サイクルを構築するためのハイブリッド・タイマーです。単なるカウントダウンだけでなく、複数のインターバル設定を組み合わせて、フロー状態への導入を支援します。</p>
-        </div>
-
-        <div class="info-section">
-            <h2 class="info-title">3つのモード</h2>
-            <div class="mode-guide">
-                <div class="mode-name">● Timer（通常タイマー）</div>
-                <p class="info-text">設定した時間が一度だけ経過するシンプルなモードです。カップ麺や短い仮眠に最適です。</p>
-            </div>
-            <div class="mode-guide">
-                <div class="mode-name">● Repeat（繰り返し）</div>
-                <p class="info-text">Work（作業）時間を指定回数繰り返します。1分間のアウトプットを10回繰り返すような訓練に役立ちます。</p>
-            </div>
-            <div class="mode-guide">
-                <div class="mode-name">● Interval（インターバル）</div>
-                <p class="info-text">Work（作業）とRest（休憩）を交互に行います。ポモドーロ・テクニック（25分作業/5分休憩）やHIITに最適です。</p>
-            </div>
-        </div>
-
-        <div class="info-section">
-            <h2 class="info-title">使い方</h2>
-            <p class="info-text">1. 下部の<b>「タイマー」</b>タブでモードを選択し、各カードを上下にスクロールして時間を設定します。<br>
-            2. <b>START</b>ボタンで計測開始。終了3秒前から予報音が鳴り、完了すると点滅してお知らせします。<br>
-            3. よく使う設定は<b>「保存済み」</b>タブからいつでも保存・呼び出しが可能です。</p>
+            <p class="info-text">このツールは、高度な集中力を必要とするシーンにおいて、最適な作業サイクルを構築するためのハイブリッド・タイマーです。</p>
         </div>
     </div>
 
@@ -130,35 +107,27 @@
 </div>
 
 <div id="dashboard">
-    <div id="ui-phase" style="font-size:24px; font-weight:900; margin-bottom:10px;">WORK</div>
+    <div id="ui-phase" style="font-size:24px; font-weight:900; margin-bottom:10px;">READY</div>
     <div class="circle-ui">
         <svg viewBox="0 0 210 210"><circle cx="105" cy="105" r="100" fill="none" stroke="#eef0f5" stroke-width="8"/><circle id="progress" class="ring-bar" cx="105" cy="105" r="100" stroke="var(--active)"/></svg>
         <div class="time-text" id="ui-time">00:00</div>
     </div>
     <div id="ui-sets" style="font-weight:bold; color:var(--muted);">SET 1 / 1</div>
-    <button class="start-btn" onclick="stopWorkout()" style="background:#ff3b30; width:80%; margin-top:40px;">STOP</button>
+    <button class="start-btn" id="stop-btn" onclick="stopWorkout()" style="background:#ff3b30; width:80%; margin-top:40px;">STOP</button>
 </div>
 
 <script>
     const presets = [
         {m:'timer', w:180, r:0, s:1, e:'🍜', t:'カップ麺', d:'3分'},
         {m:'timer', w:300, r:0, s:1, e:'🧘', t:'瞑想', d:'5分'},
-        {m:'timer', w:420, r:0, s:1, e:'🥚', t:'ゆで卵', d:'7分'},
-        {m:'timer', w:600, r:0, s:1, e:'🧹', t:'10分集中', d:'掃除・片付け'},
-        {m:'timer', w:900, r:0, s:1, e:'💤', t:'仮眠', d:'15分'},
         {m:'repeat', w:60, r:0, s:10, e:'📝', t:'ゼロ秒思考', d:'1分 × 10回'},
-        {m:'interval', w:20, r:10, s:8, e:'🏋️', t:'HIIT', d:'20s/10s × 8'},
-        {m:'interval', w:30, r:5, s:10, e:'🤸', t:'ストレッチ', d:'30s × 10'},
         {m:'interval', w:25*60, r:300, s:4, e:'🍅', t:'ポモドーロ', d:'25m/5m × 4'}
     ];
     document.getElementById('quick-list').innerHTML = presets.map(p => `
         <div class="quick-row">
             <div class="quick-info">
                 <span class="quick-emoji">${p.e}</span>
-                <div class="quick-text-group">
-                    <span class="quick-title">${p.t}</span>
-                    <span class="quick-desc">${p.d}</span>
-                </div>
+                <div class="quick-text-group"><span class="quick-title">${p.t}</span><span class="quick-desc">${p.d}</span></div>
             </div>
             <div class="row-btn-group">
                 <button class="btn-mini-tune" onclick="quickAction('${p.m}', ${p.w}, ${p.r}, ${p.s}, true)">⚙️</button>
@@ -170,7 +139,23 @@
     const H = 105;
     let conf = { mode: 'timer', work: 180, rest: 0, sets: 1 };
     let tId = null;
+    let wakeLock = null;
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    async function requestWakeLock() {
+        try {
+            if ('wakeLock' in navigator) {
+                wakeLock = await navigator.wakeLock.request('screen');
+            }
+        } catch (err) { console.error(`${err.name}, ${err.message}`); }
+    }
+
+    function releaseWakeLock() {
+        if (wakeLock !== null) {
+            wakeLock.release();
+            wakeLock = null;
+        }
+    }
 
     function beep(freq, dur, startTime = 0) {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -185,40 +170,8 @@
     function switchTab(t) {
         document.querySelectorAll('.content').forEach(p => p.style.display = 'none');
         document.getElementById('page-' + t).style.display = 'block';
-        document.querySelectorAll('.tab-item').forEach(i => {
-            const label = i.innerText.trim();
-            const isTarget = (t === 'quick' && label === 'クイック') ||
-                           (t === 'custom' && label === 'タイマー') ||
-                           (t === 'fav' && label === '保存済み') ||
-                           (t === 'help' && label === '使い方');
-            i.classList.toggle('active', isTarget);
-        });
+        document.querySelectorAll('.tab-item').forEach(i => i.classList.toggle('active', i.innerText.includes(t==='custom'?'タイマー':t==='quick'?'クイック':t==='fav'?'保存済み':'使い方')));
         if(t === 'fav') renderPresets();
-    }
-
-    function setPickerValue(id, val, max) {
-        const el = document.getElementById(id);
-        const mid = (max + 1) * H;
-        const targetScroll = mid + (val * H);
-        el.scrollTo({ top: targetScroll, behavior: 'auto' });
-        requestAnimationFrame(() => {
-            el.scrollTo({ top: targetScroll, behavior: 'auto' });
-            el.querySelectorAll('.picker-item').forEach((it, i) => {
-                it.classList.toggle('selected', i === Math.round(targetScroll / H));
-            });
-        });
-    }
-
-    function quickAction(m, w, r, s, onlyTune) {
-        conf.mode = m; conf.work = w; conf.rest = r; conf.sets = s;
-        setModeUI(m);
-        setPickerValue('w-m', Math.floor(w/60), 59);
-        setPickerValue('w-s', w%60, 59);
-        setPickerValue('r-m', Math.floor(r/60), 59);
-        setPickerValue('r-s', r%60, 59);
-        setPickerValue('s-v', s, 99);
-        updateTotalDisplay();
-        if (onlyTune) switchTab('custom'); else startWorkout();
     }
 
     function mkPicker(id, max) {
@@ -242,12 +195,14 @@
         });
     }
 
+    function setPickerValue(id, val, max) {
+        const el = document.getElementById(id);
+        const targetScroll = ((max + 1) * H) + (val * H);
+        el.scrollTo({ top: targetScroll, behavior: 'auto' });
+    }
+
     function syncFromPickers() {
-        const getV = (id, max) => {
-            const el = document.getElementById(id);
-            if(!el) return 0;
-            return Math.round(el.scrollTop/H) % (max+1);
-        };
+        const getV = (id, max) => Math.round(document.getElementById(id).scrollTop/H) % (max+1);
         conf.work = getV('w-m',59)*60 + getV('w-s',59);
         conf.rest = getV('r-m',59)*60 + getV('r-s',59);
         conf.sets = Math.max(1, getV('s-v',99));
@@ -265,22 +220,54 @@
         document.getElementById('card-sets').classList.toggle('disabled', m === 'timer');
     }
 
+    function quickAction(m, w, r, s, onlyTune) {
+        conf.mode = m; conf.work = w; conf.rest = r; conf.sets = s;
+        setModeUI(m);
+        setPickerValue('w-m', Math.floor(w/60), 59); setPickerValue('w-s', w%60, 59);
+        setPickerValue('r-m', Math.floor(r/60), 59); setPickerValue('r-s', r%60, 59);
+        setPickerValue('s-v', s, 99);
+        updateTotalDisplay();
+        if (onlyTune) switchTab('custom'); else startWorkout();
+    }
+
     function startWorkout() {
         if (conf.work <= 0 && conf.rest <= 0) return;
+        requestWakeLock();
         if (audioCtx.state === 'suspended') audioCtx.resume();
-        let currentSet = 1;
-        let phase = (conf.work > 0) ? 'work' : 'rest';
-        let remaining = (phase === 'work') ? conf.work : conf.rest;
-        let totalPhaseTime = remaining;
+
         const dash = document.getElementById('dashboard');
         dash.style.display = 'flex'; dash.classList.remove('flashing');
-        const tick = () => {
-            document.getElementById('ui-time').textContent = `${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
+        
+        let countdown = 3;
+        const uiTime = document.getElementById('ui-time');
+        const uiPhase = document.getElementById('ui-phase');
+        const progress = document.getElementById('progress');
+
+        const startCountdown = () => {
+            uiPhase.textContent = "READY";
+            uiTime.textContent = countdown;
+            progress.style.strokeDashoffset = 628;
+            beep(440, 0.05);
+            if (countdown <= 0) {
+                runTimer();
+            } else {
+                countdown--;
+                tId = setTimeout(startCountdown, 1000);
+            }
+        };
+
+        let currentSet = 1, phase = (conf.work > 0) ? 'work' : 'rest';
+        let remaining = (phase === 'work') ? conf.work : conf.rest;
+        let totalPhaseTime = remaining;
+
+        const runTimer = () => {
+            uiTime.textContent = `${String(Math.floor(remaining/60)).padStart(2,'0')}:${String(remaining%60).padStart(2,'0')}`;
             document.getElementById('ui-sets').textContent = conf.mode === 'timer' ? "" : `SET ${currentSet} / ${conf.sets}`;
             const isW = phase === 'work';
-            document.getElementById('ui-phase').textContent = isW ? "WORK" : "REST";
-            document.getElementById('progress').style.stroke = isW ? 'var(--active)' : 'var(--rest)';
-            document.getElementById('progress').style.strokeDashoffset = 628 - (628 * (remaining / totalPhaseTime));
+            uiPhase.textContent = isW ? "WORK" : "REST";
+            progress.style.stroke = isW ? 'var(--active)' : 'var(--rest)';
+            progress.style.strokeDashoffset = 628 - (628 * (remaining / totalPhaseTime));
+
             if (remaining <= 3 && remaining > 0) beep(880, 0.1);
             if (remaining === 0) {
                 if (phase === 'work') {
@@ -292,22 +279,20 @@
                     currentSet++; phase = 'work'; remaining = conf.work; totalPhaseTime = conf.work; beep(1760, 0.3);
                 }
             } else remaining--;
-            tId = setTimeout(tick, 1000);
+            tId = setTimeout(runTimer, 1000);
         };
-        tick();
+
+        startCountdown();
     }
 
     function finish() {
-        clearTimeout(tId); 
-        for(let i=0; i<3; i++) {
-            const base = i * 1.0;
-            [0, 0.2, 0.4, 0.6].forEach(t => beep(2500, 0.1, base + t));
-        }
+        clearTimeout(tId); releaseWakeLock();
+        for(let i=0; i<3; i++) [0, 0.2, 0.4, 0.6].forEach(t => beep(2500, 0.1, i + t));
         document.getElementById('dashboard').classList.add('flashing');
         document.getElementById('ui-phase').textContent = "COMPLETE!";
     }
 
-    function stopWorkout() { clearTimeout(tId); document.getElementById('dashboard').style.display = 'none'; }
+    function stopWorkout() { clearTimeout(tId); releaseWakeLock(); document.getElementById('dashboard').style.display = 'none'; }
 
     function renderPresets() {
         const p = JSON.parse(localStorage.getItem('timer_presets') || '[]');
@@ -334,19 +319,11 @@
     }
 
     document.querySelectorAll('.mode-btn').forEach(b => {
-        b.onclick = () => {
-            conf.mode = b.dataset.mode;
-            setModeUI(conf.mode);
-            updateTotalDisplay();
-        };
+        b.onclick = () => { conf.mode = b.dataset.mode; setModeUI(conf.mode); updateTotalDisplay(); };
     });
 
     mkPicker('w-m', 59); mkPicker('w-s', 59); mkPicker('r-m', 59); mkPicker('r-s', 59); mkPicker('s-v', 99);
-    
-    window.onload = () => {
-        setModeUI('timer');
-        updateTotalDisplay();
-    };
+    window.onload = () => { setModeUI('timer'); updateTotalDisplay(); };
 </script>
 </body>
 </html>

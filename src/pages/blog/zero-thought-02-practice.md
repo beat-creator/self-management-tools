@@ -1,7 +1,7 @@
 ---
 layout: ../../layouts/Layout.astro
 title: "【連載 第2回】白紙を前にフリーズしない！即実践できる「ゼロ秒思考」マニュアルとお題リスト"
-date: "2026年5月10日"
+date: "2026年5月11日"
 thumbnail: "/images/zero-thought-practice.png"
 category: "メンタル管理・生産性向上"
 ---

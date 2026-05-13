@@ -3,22 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ultimate Hybrid Timer</title>
+    <title>集中タイマー | 心と体を整えるツール</title>
     <style>
         :root {
             --bg: #f2f4f7; --card: #ffffff; --primary: #1c1c1e;
             --active: #34c759; --rest: #007aff; --muted: #8e8e93; --finish: #ffcc00;
         }
-        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
+        body { margin: 0; font-family: -apple-system, "Helvetica Neue", "Hiragino Kaku Gothic ProN", "メイリオ", sans-serif; background: var(--bg); color: #333; overflow: hidden; user-select: none; }
         .container { height: 100svh; display: flex; flex-direction: column; }
         .content { flex: 1; overflow-y: auto; padding: 15px; padding-bottom: 100px; }
 
-        /* 使い方ページのスタイル */
-        .info-section { margin-bottom: 25px; }
-        .info-title { font-size: 20px; font-weight: 900; color: var(--primary); margin-bottom: 10px; border-bottom: 2px solid var(--primary); padding-bottom: 5px; }
-        .info-text { font-size: 14px; line-height: 1.6; color: #444; }
-        .mode-guide { background: white; border-radius: 12px; padding: 12px; margin-top: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .mode-name { font-weight: bold; color: var(--primary); font-size: 15px; }
+        /* 使い方・記事セクションのスタイル */
+        .info-section { margin-bottom: 30px; background: white; padding: 20px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .info-title { font-size: 22px; font-weight: 900; color: var(--primary); margin-bottom: 15px; line-height: 1.4; }
+        .info-subtitle { font-size: 18px; font-weight: bold; color: var(--primary); margin: 25px 0 10px; padding-left: 10px; border-left: 4px solid var(--primary); }
+        .info-text { font-size: 14px; line-height: 1.8; color: #444; margin-bottom: 15px; }
+        .highlight-box { background: #f8f9fa; border-radius: 12px; padding: 15px; margin: 15px 0; border: 1px solid #eee; }
+        .article-img-placeholder { width: 100%; height: 180px; background: #eef0f5; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 12px; margin: 10px 0; }
 
         .quick-row { 
             background: var(--card); border-radius: 16px; padding: 12px 15px; 
@@ -93,8 +94,28 @@
 
     <div id="page-help" class="content" style="display:none">
         <div class="info-section">
-            <h1 class="info-title">集中タイマー</h1>
-            <p class="info-text">このツールは、高度な集中力を必要とするシーンにおいて、最適な作業サイクルを構築するためのハイブリッド・タイマーです。</p>
+            <h1 class="info-title">心と体を整える。<br>日々のリズムに寄り添う「集中タイマー」活用術</h1>
+            <p class="info-text">忙しい毎日の中で、自分のための時間を確保するのは意外と難しいものです。このタイマーは、あなたを追い立てるための道具ではありません。時間の区切りを上手に使うことで、「今はこれに集中する」「今はしっかり休む」という心地よいリズムを整えるためのパートナーです。</p>
+            
+            <h2 class="info-subtitle">1. 気分で選べる3つのモード</h2>
+            <p class="info-text"><b>タイマー：</b>「10分だけ片付けをしよう」など、ちょっとした目標を立てる時に。<br><b>リピート：</b>設定した時間を繰り返しカウント。一定のテンポで進めたい時に。<br><b>インターバル：</b>「集中」と「休憩」を交互にお知らせ。心に余裕を持ちたい時に最適です。</p>
+            <div class="article-img-placeholder">[設定画面のスクリーンショットをここに]</div>
+
+            <h2 class="info-subtitle">2. 自分だけの「お気に入り時間」を資産に</h2>
+            <p class="info-text">「この時間の組み合わせ、自分に合っているな」と感じたら、ぜひ名前を付けて保存してください。一度保存すれば、次からは選ぶだけでいつもの安定したペースを取り戻せます。毎回設定し直す手間を省き、「よし、始めよう」と思ったその瞬間の気持ちを大切にできます。</p>
+            <div class="article-img-placeholder">[保存済みリストのスクリーンショットをここに]</div>
+
+            <h2 class="info-subtitle">3. クイック登録でセルフケア</h2>
+            <p class="info-text">「ちょっと疲れたな」と思った時に、すぐ実践できるメニューを用意しました。</p>
+            <div class="highlight-box">
+                <p class="info-text"><b>・お茶を淹れる（3分）：</b>お湯を沸かし、茶葉を蒸らす時間をタイマーに預けてゆとりを。<br><b>・デジタルデトックス（15分）：</b>スマホを置いて目を休める、優しい癒しの時間。<br><b>・片付けスプリント（5分）：</b>短い時間だからこそ集中でき、終わった後の達成感が心を前向きに。<br><b>・深呼吸タイム（1分）：</b>モヤモヤした時、1分だけ呼吸に意識を向けて頭をスッキリ。</p>
+            </div>
+            <div class="article-img-placeholder">[クイックアクションのスクリーンショットをここに]</div>
+
+            <h2 class="info-subtitle">4. おすすめの整え方例</h2>
+            <p class="info-text"><b>「朝のスタートダッシュ」：</b>タイマーモードで15分。一番やりたかったことを一つだけ終わらせます。<br><b>「午後のおだやか仕事術」：</b>インターバルモードで25分集中＋5分休憩。無理のないペースで。<br><b>「おやすみ前のリセット」：</b>デジタルデトックスや深呼吸で一日の緊張をほどき、眠りの準備をします。</p>
+
+            <p class="info-text" style="margin-top:30px; text-align:center; font-weight:bold;">時間は、自分が心地よく過ごすためにあるもの。<br>まずはクイック登録から、自分に合う「整え方」を探してみてください。</p>
         </div>
     </div>
 
@@ -118,7 +139,10 @@
 
 <script>
     const presets = [
-        {m:'timer', w:180, r:0, s:1, e:'🍜', t:'カップ麺', d:'3分'},
+        {m:'timer', w:180, r:0, s:1, e:'🍵', t:'お茶を淹れる', d:'3分'},
+        {m:'timer', w:900, r:0, s:1, e:'📵', t:'デジタルデトックス', d:'15分'},
+        {m:'timer', w:300, r:0, s:1, e:'🧹', t:'片付けスプリント', d:'5分'},
+        {m:'timer', w:60, r:0, s:1, e:'🌬️', t:'深呼吸タイム', d:'1分'},
         {m:'timer', w:300, r:0, s:1, e:'🧘', t:'瞑想', d:'5分'},
         {m:'repeat', w:60, r:0, s:10, e:'📝', t:'ゼロ秒思考', d:'1分 × 10回'},
         {m:'interval', w:25*60, r:300, s:4, e:'🍅', t:'ポモドーロ', d:'25m/5m × 4'}
@@ -136,6 +160,7 @@
         </div>
     `).join('');
 
+    // ... (以下、JavaScriptロジックは変更なし)
     const H = 105;
     let conf = { mode: 'timer', work: 180, rest: 0, sets: 1 };
     let tId = null;

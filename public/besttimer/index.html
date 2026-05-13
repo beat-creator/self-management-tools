@@ -242,16 +242,30 @@
 
     function setModeUI(m) {
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
-        document.getElementById('card-rest').classList.toggle('disabled', m === 'timer');
+        // 修正ポイント：timer または repeat の時は Rest を非活性にする
+        document.getElementById('card-rest').classList.toggle('disabled', m === 'timer' || m === 'repeat');
         document.getElementById('card-sets').classList.toggle('disabled', m === 'timer');
     }
 
     function quickAction(m, w, r, s, onlyTune) {
         conf.mode = m; conf.work = w; conf.rest = r; conf.sets = s;
         setModeUI(m);
-        setPickerValue('w-m', Math.floor(w/60), 59); setPickerValue('w-s', w%60, 59);
-        setPickerValue('r-m', Math.floor(r/60), 59); setPickerValue('r-s', r%60, 59);
-        setPickerValue('s-v', s, 99);
+        
+        // 修正ポイント：値をセットした後に手動でselectedクラスを更新し、表示を確定させる
+        const updateP = (id, val, max) => {
+            const el = document.getElementById(id);
+            const targetScroll = ((max + 1) * H) + (val * H);
+            el.scrollTop = targetScroll; // behavior: 'auto'で即時反映
+            // 表示上の「selected」クラスを強制更新
+            el.querySelectorAll('.picker-item').forEach((it, i) => 
+                it.classList.toggle('selected', i === Math.round(targetScroll/H))
+            );
+        };
+
+        updateP('w-m', Math.floor(w/60), 59); updateP('w-s', w%60, 59);
+        updateP('r-m', Math.floor(r/60), 59); updateP('r-s', r%60, 59);
+        updateP('s-v', s, 99);
+        
         updateTotalDisplay();
         if (onlyTune) switchTab('custom'); else startWorkout();
     }

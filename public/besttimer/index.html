@@ -139,7 +139,7 @@
 </div>
 
 <script>
-    const presets = [
+   const presets = [
         {m:'timer', w:180, r:0, s:1, e:'🍵', t:'お茶を淹れる', d:'3分'},
         {m:'timer', w:900, r:0, s:1, e:'📵', t:'デジタルデトックス', d:'15分'},
         {m:'timer', w:300, r:0, s:1, e:'🧹', t:'片付けスプリント', d:'5分'},
@@ -148,6 +148,7 @@
         {m:'repeat', w:60, r:0, s:10, e:'📝', t:'ゼロ秒思考', d:'1分 × 10回'},
         {m:'interval', w:25*60, r:300, s:4, e:'🍅', t:'ポモドーロ', d:'25m/5m × 4'}
     ];
+    // 修正ポイント：⚙️ボタンを削除し、実行ボタンのみに。
     document.getElementById('quick-list').innerHTML = presets.map(p => `
         <div class="quick-row">
             <div class="quick-info">
@@ -155,8 +156,7 @@
                 <div class="quick-text-group"><span class="quick-title">${p.t}</span><span class="quick-desc">${p.d}</span></div>
             </div>
             <div class="row-btn-group">
-                <button class="btn-mini-tune" onclick="quickAction('${p.m}', ${p.w}, ${p.r}, ${p.s}, true)">⚙️</button>
-                <button class="btn-mini-start" onclick="quickAction('${p.m}', ${p.w}, ${p.r}, ${p.s}, false)">▶️</button>
+                <button class="btn-mini-start" onclick="quickAction('${p.m}', ${p.w}, ${p.r}, ${p.s})">▶️</button>
             </div>
         </div>
     `).join('');

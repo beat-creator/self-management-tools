@@ -77,4 +77,11 @@ const title = frontmatter?.title || Astro.props.title || "Self-Management Toolki
 		border-radius: 12px;    /* 角を丸くしてアプリの雰囲気に合わせる */
 		box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* 軽い影をつけて「図」として独立させる */
 	}
+
+	/* スクリーンショット画像（縦長のもの）への制限 */
+	/* 縦横比が縦に長い画像、または特定のクラスを想定 */
+	article img {
+		max-height: 500px;     /* PCで見た時の「高さ」を制限する */
+		width: auto;            /* 高さに合わせて幅を自動調整 */
+	}
 </style>

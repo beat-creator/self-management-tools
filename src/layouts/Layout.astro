@@ -67,11 +67,14 @@ const title = frontmatter?.title || Astro.props.title || "Self-Management Toolki
 	.app-link-box a { background: white !important; color: #4f46e5 !important; padding: 10px 20px; border-radius: 30px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 15px; }
 	.site-footer { margin-top: 60px; padding: 40px 0; text-align: center; border-top: 1px solid #e2e8f0; }
 	
+	/* 画像のレスポンシブ対応とPCでのサイズ制限 */
 	img {
-		max-width: 100%;
-		height: auto;
+		width: 100%;            /* スマホなど幅が狭い時は横幅いっぱい */
+		max-width: 650px;      /* PCで見てもこれ以上大きくならない（本文幅に合わせる） */
+		height: auto;           /* 比率を維持 */
 		display: block;
-		margin: 30px auto;
-		border-radius: 12px;
+		margin: 40px auto;      /* 上下に余白を作り、中央に寄せる */
+		border-radius: 12px;    /* 角を丸くしてアプリの雰囲気に合わせる */
+		box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* 軽い影をつけて「図」として独立させる */
 	}
 </style>

@@ -77,24 +77,30 @@ const title = frontmatter?.title || Astro.props.title || "Self-Management Toolki
 		border-radius: 12px;    /* 角を丸くしてアプリの雰囲気に合わせる */
 		box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* 軽い影をつけて「図」として独立させる */
 	}
-
-	/* --- 記事本文の画像はみ出し修正 --- */
+/* --- 記事本文の画像最適化 --- */
 article img {
-  /* 1. まずは「画面からはみ出さない」ことを最優先にする */
-  max-width: 100% !important; 
+  /* 1. スマホでは「横幅いっぱい」を基本にする */
+  width: 100% !important; 
+  max-width: 100% !important;
   height: auto !important;
   
-  /* 2. その上で、PCなどの大きな画面での制限をかける */
+  /* 2. 共通のデザイン設定 */
   display: block;
-  margin: 40px auto;
+  margin: 30px auto;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  /* スマホで縦長すぎないよう、少しだけ高さを制限（好みで調整） */
+  max-height: 80vh; 
+  object-fit: contain;
 }
-/* 3. スクショなど「縦長」でPCだとデカすぎる画像への対策 */
+
+/* 3. PC（大きな画面）でのみ、巨大化を抑える */
 @media (min-width: 769px) {
   article img {
-    max-height: 500px; /* PCの時だけ高さを抑える */
-    width: auto !important; /* 高さに合わせて幅を調整 */
+    /* PCでは縦幅を固定して、横が縮むようにする */
+    max-height: 500px;
+    width: auto !important;
+    margin: 40px auto;
   }
-}
+}}
 </style>

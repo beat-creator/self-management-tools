@@ -1,0 +1,54 @@
+﻿---
+// src/pages/category/[category].astro
+import Layout from '../../layouts/Layout.astro';
+
+// 1. 存在するカテゴリのルートを定義する（Astro必須の設定）
+export async function getStaticPaths() {
+  return [
+    { params: { category: '集中力・時間管理' } },
+    { params: { category: '思考法・記憶力' } },
+    { params: { category: 'メンタルケア・セルフケア' } },
+    { params: { category: 'ライフハック' } },
+  ];
+}
+
+const { category } = Astro.params;
+
+// 2. 記事データを取得（現在pages/blog/直下にmdファイルがある構成を想定）
+// ※もしAstroのContent Collectionsを使っている場合は getCollection('blog') になります
+const allPosts = await Astro.glob('../blog/*.md');
+
+// 3. フロントマターの category が、URL（Astro.params）と一致するものだけに絞り込む
+const filteredPosts = allPosts.filter(post => post.frontmatter.category === category);
+
+// 4. カテゴリに合わせた表示用のタイトルをマッピング
+const categoryTitles = {
+  '集中力・時間管理': '⏱️ 集中力・時間管理',
+  '思考法・記憶力': '🧠 思考法・記憶力',
+  'メンタルケア・セルフケア': '🧘 メンタルケア・セルフケア',
+  'ライフハック': '⚡ ライフハック'
+};
+const displayTitle = categoryTitles[category] || category;
+---
+
+<Layout title={`${displayTitle}の記事一覧`}>
+  <main>
+    <h1>{displayTitle} のコラム一覧</h1>
+    
+    <div class="post-list">
+      {filteredPosts.map(post => (
+        <article class="post-card">
+          <a href={post.url}>
+            <img src={post.frontmatter.thumbnail} alt={post.frontmatter.title} />
+            <h3>{post.frontmatter.title}</h3>
+            <p>{post.frontmatter.description}</p>
+          </a>
+        </article>
+      ))}
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* ここに一覧ページのスタイル（グリッド配置など）を記述 */
+</style>

@@ -90,7 +90,7 @@ const displayTitle = categoryTitles[category] || category;
   .category-container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 2rem 1rem 4rem 1rem; /* 💡底面の余白を適正化 */
+    padding: 2rem 1rem 4rem 1rem;
   }
   
   .breadcrumb {
@@ -126,72 +126,69 @@ const displayTitle = categoryTitles[category] || category;
     margin: 0;
   }
 
+  /* 🛠️ ブログトップと統一感を持たせるグリッド配置（PC環境では2列） */
   .post-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  @media (min-width: 650px) {
+    .post-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 
+  /* 🛠️ 白基調 ＋ ゆったり美しいインナーマージンを持たせた縦型カード */
   .post-card {
     background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
+    border: 1px solid #e2e8f0;       /* 上品な薄グレーの枠線 */
+    border-radius: 24px;             /* 豊かな角丸 */
     overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   }
   .post-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    border-color: #3b82f6;
   }
 
   .card-link {
     display: flex;
+    flex-direction: column;          /* 💡PC・スマホ両方で縦並びパネルに統一 */
     text-decoration: none;
     color: inherit;
-  }
-  @media (max-width: 640px) {
-    .card-link {
-      flex-direction: column;
-    }
+    padding: 18px;                   /* 💡インナー余白であの美しい占有率を再現 */
+    box-sizing: border-box;
+    height: 100%;
   }
 
+  /* 🛠️ サムネイル画像を枠の内側に綺麗に収める（16:9比率） */
   .card-thumbnail {
-    width: 200px;
-    min-width: 200px;
-    height: 130px;
-    overflow: hidden;
+    width: 100% !important;
+    min-width: 100% !important;
+    aspect-ratio: 16 / 9;            /* 比率を16:9に美しく固定 */
     background: #f3f4f6;
+    border-radius: 14px;             /* 💡画像の外周にも丸みを持たせて一体感を出す */
+    overflow: hidden;
+    margin-bottom: 16px;             /* 画像とテキストの間の余白 */
   }
 
-  /* 💡ご提示いただいた最強の指定に完全に合わせました */
+  /* 💡最強の打ち消しスタイルをそのまま継承 */
   .card-thumbnail img {
-    /* 1. 箱のサイズを親に絶対合わせる */
     width: 100% !important;
     height: 100% !important;
-
-    /* 2. 比率を無視して「枠いっぱい」まで拡大して切り抜く */
     object-fit: cover !important;
-
-    /* 3. 画像のどこを基準にするか（コラムのアイキャッチならcenter、上が大事ならtop） */
     object-position: center !important;
-
-    /* 4. 余計な余白や配置のズレを殺す */
     display: block !important;
     margin: 0 !important;
   }
 
-  @media (max-width: 640px) {
-    .card-thumbnail {
-      width: 100%;
-      height: 180px;
-    }
-  }
-
   .card-content {
-    padding: 1.25rem;
+    padding: 0;                      /* リンク側に余白を統合したため、ここは0にクリア */
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    flex-grow: 1;
   }
   
   .card-meta {
@@ -211,22 +208,23 @@ const displayTitle = categoryTitles[category] || category;
   }
 
   .card-content h3 {
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: 1.05rem;
+    font-weight: 800;
     color: #1f2937;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 10px 0;
     line-height: 1.4;
   }
   .post-card:hover .card-content h3 {
-    color: #2563eb;
+    color: #3b82f6;
   }
 
   .card-description {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #4b5563;
+    line-height: 1.6;
     margin: 0;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -235,5 +233,12 @@ const displayTitle = categoryTitles[category] || category;
     text-align: center;
     padding: 4rem 1rem;
     color: #6b7280;
+  }
+
+  /* スマホ画面用の調整 */
+  @media (max-width: 480px) {
+    .card-link { padding: 14px; }
+    .post-card { border-radius: 20px; }
+    .card-thumbnail { border-radius: 10px; margin-bottom: 12px; }
   }
 </style>

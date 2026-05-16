@@ -3,7 +3,7 @@ layout: ../../layouts/Layout.astro
 title: "ポモドーロタイマーとは？効果と正しいやり方を徹底解説"
 date: "2026年5月3日"
 thumbnail: "/images/pomodoro-thumb.jpg"
-category: "時間管理・生産性"
+category: "集中力・時間管理"
 ---
 
 仕事や勉強に集中しようとしても、ついついメールをチェックしたり、SNSを眺めてしまったり……。そんな悩みを解決する最もシンプルで強力な武器が「ポモドーロ・テクニック」です。

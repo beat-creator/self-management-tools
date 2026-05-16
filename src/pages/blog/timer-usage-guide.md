@@ -3,7 +3,7 @@ layout: ../../layouts/Layout.astro
 title: "集中タイマーの活用術｜作業・勉強・休憩のリズムを整える使い方"
 date: "2026年5月15日"
 thumbnail: "/images/timer-rhythm-wave.png"
-category: "セルフマネジメント・ツール"
+category: "集中力・時間管理"
 ---
 
 「やらなきゃ」と思っているのに集中できない。

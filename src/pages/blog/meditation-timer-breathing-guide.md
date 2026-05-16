@@ -3,7 +3,7 @@ layout: ../../layouts/Layout.astro
 title: "瞑想タイマー活用ガイド｜呼吸法・睡眠前・マインドフルネスにおすすめ"
 date: "2026年5月15日"
 thumbnail: "/images/meditation-timer-breathing-guide.png" 
-category: "暮らしを整える"
+category: "メンタルケア・セルフケア"
 description: "瞑想タイマーの使い方や呼吸法、睡眠前・仕事中の活用方法を紹介。マインドフルネスやボックスブリージングを日常へ取り入れたい方におすすめです。"
 ---
 

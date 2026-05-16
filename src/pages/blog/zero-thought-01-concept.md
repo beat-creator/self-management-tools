@@ -3,7 +3,7 @@ layout: ../../layouts/Layout.astro
 title: "【連載 第1回】なぜあなたの頭はフリーズするのか？マッキンゼー流「ゼロ秒思考」が脳のメモリを解放する理由"
 date: "2026年5月10日"
 thumbnail: "/images/zero-thought-concept.png"
-category: "メンタル管理・生産性向上"
+category: "思考法・記憶力"
 ---
 
 ## 序論：仕事ができる人ほど「悩まない」

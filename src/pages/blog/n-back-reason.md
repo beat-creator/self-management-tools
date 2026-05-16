@@ -3,7 +3,7 @@ layout: ../../layouts/Layout.astro
 title: "N-Back計算でワーキングメモリを鍛える理由｜科学的根拠と実践法"
 date: "2026年5月3日"
 thumbnail: "/images/n-back-thumb.jpg"
-category: "脳機能・トレーニング"
+category: "思考法・記憶力"
 ---
 
 巷には多くの「脳トレ」があふれていますが、その多くは「そのゲーム自体が上手くなるだけ」で、実際の仕事や生活に役立つ効果（転移効果）については疑問視されているものも少なくありません。

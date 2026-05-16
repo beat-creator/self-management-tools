@@ -3,7 +3,7 @@ layout: ../../layouts/Layout.astro
 title: "集中力を上げる方法7選【科学的根拠あり】"
 date: "2026年5月3日"
 thumbnail: "/images/concentration-thumb.jpg"
-category: "集中力・生産性"
+category: "集中力・時間管理"
 description: "心理学や脳科学の知見に基づいた、科学的根拠のある「集中力を上げる方法」を7つ厳選して解説します。"
 ---
 

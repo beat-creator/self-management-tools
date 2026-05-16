@@ -3,7 +3,7 @@ layout: ../../layouts/Layout.astro
 title: "【連載 第2回】白紙を前にフリーズしない！即実践できる「ゼロ秒思考」マニュアルとお題リスト"
 date: "2026年5月11日"
 thumbnail: "/images/zero-thought-practice.png"
-category: "メンタル管理・生産性向上"
+category: "思考法・記憶力"
 ---
 
 前回は、ゼロ秒思考が「脳のメモリを解放する」仕組みについて解説しました。

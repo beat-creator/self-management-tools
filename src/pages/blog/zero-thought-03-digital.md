@@ -3,7 +3,7 @@ layout: ../../layouts/Layout.astro
 title: "【連載 第3回】三日坊主を卒業せよ！「1分の壁」と「保管の悩み」を突破するデジタル活用術"
 date: "2026年5月13日"
 thumbnail: "/images/zero-thought-digital.png"
-category: "メンタル管理・生産性向上"
+category: "思考法・記憶力"
 ---
 
 全3回にわたってお届けしてきた「ゼロ秒思考」シリーズも、今回が最終回です。

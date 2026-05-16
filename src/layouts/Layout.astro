@@ -1,7 +1,8 @@
 ---
-// 変数名を整理しました。これでエラーは消えます。
 const { frontmatter, headings } = Astro.props;
 const title = frontmatter?.title || Astro.props.title || "Self-Management Toolkit";
+// 👇 この1行を追加（現在のページがトップページかどうかを判定します）
+const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/index.html";
 ---
 <!doctype html>
 <html lang="ja">
@@ -46,9 +47,12 @@ const title = frontmatter?.title || Astro.props.title || "Self-Management Toolki
 		</main>
 
 		<footer class="site-footer">
-			<a href="/">トップページへ戻る</a>
+			{/* 👇 トップページ以外の場合のみ、リンクを表示する */}
+			{!isHome && <a href="/">トップページへ戻る</a>}
 			<p>© 2026 Self-Management Toolkit</p>
 		</footer>
+
+
 	</body>
 </html>
 

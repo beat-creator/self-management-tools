@@ -1,8 +1,7 @@
 ﻿---
 // src/pages/category/[category].astro
-import Layout from '../../layouts/Layout.astro';
 
-// 1. 存在するカテゴリのルートを定義する（Astro必須の設定）
+// 1. 存在するカテゴリのルートを定義する
 export async function getStaticPaths() {
   return [
     { params: { category: '集中力・時間管理' } },
@@ -14,14 +13,13 @@ export async function getStaticPaths() {
 
 const { category } = Astro.params;
 
-// 2. 記事データを取得（現在pages/blog/直下にmdファイルがある構成を想定）
-// ※もしAstroのContent Collectionsを使っている場合は getCollection('blog') になります
+// 2. 記事データを取得（src/pages/blog/*.md を正しく参照する相対パス）
 const allPosts = await Astro.glob('../../pages/blog/*.md');
 
-// 3. フロントマターの category が、URL（Astro.params）と一致するものだけに絞り込む
+// 3. フロントマターの category が一致するものだけに絞り込む
 const filteredPosts = allPosts.filter(post => post.frontmatter.category === category);
 
-// 4. カテゴリに合わせた表示用のタイトルをマッピング
+// 4. 表示用のタイトルマッピング
 const categoryTitles = {
   '集中力・時間管理': '⏱️ 集中力・時間管理',
   '思考法・記憶力': '🧠 思考法・記憶力',
@@ -31,24 +29,82 @@ const categoryTitles = {
 const displayTitle = categoryTitles[category] || category;
 ---
 
-<Layout title={`${displayTitle}の記事一覧`}>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{displayTitle}の記事一覧</title>
+  <style>
+    /* 簡易的な見た目の調整（動いているか分かりやすくするため） */
+    body {
+      font-family: sans-serif;
+      background-color: #f9fafb;
+      color: #1f2937;
+      padding: 2rem;
+      margin: 0;
+    }
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 0.5rem;
+    }
+    .post-list {
+      margin-top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .post-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .post-card a {
+      text-decoration: none;
+      color: inherit;
+    }
+    .post-card h3 {
+      margin: 0 0 0.5rem 0;
+      color: #2563eb;
+    }
+    .post-card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+    .no-posts {
+      color: #9ca3af;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
   <main>
     <h1>{displayTitle} のコラム一覧</h1>
     
     <div class="post-list">
-      {filteredPosts.map(post => (
-        <article class="post-card">
-          <a href={post.url}>
-            <img src={post.frontmatter.thumbnail} alt={post.frontmatter.title} />
-            <h3>{post.frontmatter.title}</h3>
-            <p>{post.frontmatter.description}</p>
-          </a>
-        </article>
-      ))}
+      {filteredPosts.length === 0 ? (
+        <p class="no-posts">このカテゴリの記事はまだありません。（Markdownのフロントマターの「category」の文字列と、URLの文字が完全に一致しているか確認してください）</p>
+      ) : (
+        filteredPosts.map(post => (
+          <article class="post-card">
+            <a href={post.url}>
+              <h3>{post.frontmatter.title}</h3>
+              <p>{post.frontmatter.description}</p>
+            </a>
+          </article>
+        ))
+      )}
+    </div>
+    
+    <div style="margin-top: 3rem;">
+      <a href="/" style="color: #6b7280; text-decoration: underline;">← トップページへ戻る</a>
     </div>
   </main>
-</Layout>
-
-<style>
-  /* ここに一覧ページのスタイル（グリッド配置など）を記述 */
-</style>
+</body>
+</html>

@@ -16,7 +16,7 @@ const { category } = Astro.params;
 
 // 2. 記事データを取得（現在pages/blog/直下にmdファイルがある構成を想定）
 // ※もしAstroのContent Collectionsを使っている場合は getCollection('blog') になります
-const allPosts = await Astro.glob('../blog/*.md');
+const allPosts = await Astro.glob('../../pages/blog/*.md');
 
 // 3. フロントマターの category が、URL（Astro.params）と一致するものだけに絞り込む
 const filteredPosts = allPosts.filter(post => post.frontmatter.category === category);

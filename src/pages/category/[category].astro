@@ -1,7 +1,8 @@
 ﻿---
 // src/pages/category/[category].astro
+import Layout from '../../layouts/Layout.astro';
 
-// 1. 存在するカテゴリのルートを定義する
+// 1. 存在するカテゴリのルートを定義（Astroの動的ルーティング仕様）
 export async function getStaticPaths() {
   return [
     { params: { category: '集中力・時間管理' } },
@@ -13,13 +14,28 @@ export async function getStaticPaths() {
 
 const { category } = Astro.params;
 
-// 2. 記事データを取得（src/pages/blog/*.md を正しく参照する相対パス）
-const allPosts = await Astro.glob('../../pages/blog/*.md');
+// 2. 競合バグの起きない安全な方法（import.meta.glob）でマークダウンを一括取得
+const posts = import.meta.glob('../blog/*.md', { eager: true });
+const allPosts = Object.values(posts) as any[];
 
-// 3. フロントマターの category が一致するものだけに絞り込む
-const filteredPosts = allPosts.filter(post => post.frontmatter.category === category);
+// 3. 日付順にソート（新しい記事が上に来るように調整）
+const parseDate = (dateStr: string) => {
+  if (!dateStr) return 0;
+  const match = dateStr.match(/(\d+)年(\d+)月(\d+)日/);
+  if (match) {
+    return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3])).getTime();
+  }
+  return new Date(dateStr).getTime();
+};
 
-// 4. 表示用のタイトルマッピング
+const sortedPosts = allPosts.sort((a, b) => 
+  parseDate(b.frontmatter.date) - parseDate(a.frontmatter.date)
+);
+
+// 4. フロントマターの category が、現在のURLのカテゴリと一致するものだけに絞り込む
+const filteredPosts = sortedPosts.filter(post => post.frontmatter.category === category);
+
+// 5. カテゴリに合わせた表示用のヘッダータイトルをマッピング
 const categoryTitles = {
   '集中力・時間管理': '⏱️ 集中力・時間管理',
   '思考法・記憶力': '🧠 思考法・記憶力',
@@ -29,82 +45,195 @@ const categoryTitles = {
 const displayTitle = categoryTitles[category] || category;
 ---
 
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{displayTitle}の記事一覧</title>
-  <style>
-    /* 簡易的な見た目の調整（動いているか分かりやすくするため） */
-    body {
-      font-family: sans-serif;
-      background-color: #f9fafb;
-      color: #1f2937;
-      padding: 2rem;
-      margin: 0;
-    }
-    main {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    h1 {
-      border-bottom: 2px solid #e5e7eb;
-      padding-bottom: 0.5rem;
-    }
-    .post-list {
-      margin-top: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    .post-card {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .post-card a {
-      text-decoration: none;
-      color: inherit;
-    }
-    .post-card h3 {
-      margin: 0 0 0.5rem 0;
-      color: #2563eb;
-    }
-    .post-card p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #4b5563;
-    }
-    .no-posts {
-      color: #9ca3af;
-      font-style: italic;
-    }
-  </style>
-</head>
-<body>
-  <main>
-    <h1>{displayTitle} のコラム一覧</h1>
-    
+<Layout title={`${displayTitle}の記事一覧｜知と実践のセルフマネジメント`}>
+  <main class="category-container">
+    <header class="category-header">
+      <nav class="breadcrumb">
+        <a href="/">トップ</a> <span>&gt;</span> <span class="current">{displayTitle}</span>
+      </nav>
+      <h1>{displayTitle} のコラム一覧</h1>
+      <p class="category-count">全 {filteredPosts.length} 件の記事</p>
+    </header>
+
     <div class="post-list">
       {filteredPosts.length === 0 ? (
-        <p class="no-posts">このカテゴリの記事はまだありません。（Markdownのフロントマターの「category」の文字列と、URLの文字が完全に一致しているか確認してください）</p>
+        <div class="no-posts">
+          <p>このカテゴリの記事はまだありません。</p>
+        </div>
       ) : (
         filteredPosts.map(post => (
           <article class="post-card">
-            <a href={post.url}>
-              <h3>{post.frontmatter.title}</h3>
-              <p>{post.frontmatter.description}</p>
+            <a href={post.url} class="card-link">
+              {post.frontmatter.thumbnail && (
+                <div class="card-thumbnail">
+                  <img src={post.frontmatter.thumbnail} alt={post.frontmatter.title} loading="lazy" />
+                </div>
+              )}
+              <div class="card-content">
+                <div class="card-meta">
+                  <span class="card-date">{post.frontmatter.date}</span>
+                  <span class="card-badge">{post.frontmatter.category}</span>
+                </div>
+                <h3>{post.frontmatter.title}</h3>
+                <p class="card-description">{post.frontmatter.description}</p>
+              </div>
             </a>
           </article>
         ))
       )}
     </div>
-    
-    <div style="margin-top: 3rem;">
-      <a href="/" style="color: #6b7280; text-decoration: underline;">← トップページへ戻る</a>
-    </div>
   </main>
-</body>
-</html>
+</Layout>
+
+<style>
+  /* 既存のサイトデザインと調和するスコープ付きCSS */
+  .category-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem 4rem 1rem; /* 💡底面の余白を適正化 */
+  }
+  
+  .breadcrumb {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+  }
+  .breadcrumb a {
+    color: #3b82f6;
+    text-decoration: none;
+  }
+  .breadcrumb a:hover {
+    text-decoration: underline;
+  }
+  .breadcrumb span {
+    margin: 0 0.5rem;
+  }
+
+  .category-header {
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1.5rem;
+  }
+  .category-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+  }
+  .category-count {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0;
+  }
+
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .post-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  }
+
+  .card-link {
+    display: flex;
+    text-decoration: none;
+    color: inherit;
+  }
+  @media (max-width: 640px) {
+    .card-link {
+      flex-direction: column;
+    }
+  }
+
+  .card-thumbnail {
+    width: 200px;
+    min-width: 200px;
+    height: 130px;
+    overflow: hidden;
+    background: #f3f4f6;
+  }
+
+  /* 💡ご提示いただいた最強の指定に完全に合わせました */
+  .card-thumbnail img {
+    /* 1. 箱のサイズを親に絶対合わせる */
+    width: 100% !important;
+    height: 100% !important;
+
+    /* 2. 比率を無視して「枠いっぱい」まで拡大して切り抜く */
+    object-fit: cover !important;
+
+    /* 3. 画像のどこを基準にするか（コラムのアイキャッチならcenter、上が大事ならtop） */
+    object-position: center !important;
+
+    /* 4. 余計な余白や配置のズレを殺す */
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  @media (max-width: 640px) {
+    .card-thumbnail {
+      width: 100%;
+      height: 180px;
+    }
+  }
+
+  .card-content {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-bottom: 0.5rem;
+  }
+  .card-badge {
+    background: #eff6ff;
+    color: #1e40af;
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+
+  .card-content h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.4;
+  }
+  .post-card:hover .card-content h3 {
+    color: #2563eb;
+  }
+
+  .card-description {
+    font-size: 0.9rem;
+    color: #4b5563;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .no-posts {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #6b7280;
+  }
+</style>

@@ -1,12 +1,5 @@
-// @ts-check
+ï»¿// @ts-check
 import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap'; // 1. ƒCƒ“ƒ|[ƒg‚ğ’Ç‰Á
 
 // https://astro.build/config
-export default defineConfig({
-  // 2. ‚ ‚È‚½‚Ì–{”ÔURL‚ğ•K‚¸w’èi––”ö‚ÌƒXƒ‰ƒbƒVƒ…‚Í–³‚µj
-  site: 'https://secure-toolkit.com', 
-  
-  // 3. “‡‹@”\iintegrationsj‚Ì”z—ñ‚Ésitemap()‚ğ’Ç‰Á
-  integrations: [sitemap()],
-});
+export default defineConfig({});

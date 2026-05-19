@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "my-toolkit-site",
   "type": "module",
   "version": "0.0.1",
@@ -7,11 +7,19 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+   "scripts": {
+  "dev": "astro dev",
+  "start": "astro dev",
+  // ─── 💡 ここをこのように書き換えて保存してください ───
+  "build": "astro build && ssg-cli --base https://secure-toolkit.com",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.2",
     "astro": "^6.3.1"
+  },
+  "devDependencies": {
+    "ssg-cli": "^1.0.1"
   }
 }

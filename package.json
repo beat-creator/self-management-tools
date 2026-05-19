@@ -8,12 +8,15 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "astro build && npx sitemap-generator https://secure-toolkit.com --filepath dist/sitemap.xml",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",
     "astro": "^6.3.1"
+  },
+  "devDependencies": {
+    "sitemap-generator-cli": "^7.5.0"
   }
 }

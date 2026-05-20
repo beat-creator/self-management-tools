@@ -2,7 +2,7 @@
 layout: ../../layouts/Layout.astro
 title: "AI時代、人は「考える前に疲れる」ようになった｜情報疲れと集中力低下の正体"
 date: "2026年5月20日"
-thumbnail: "/images/ai-concentration-01-thumb.jpg"
+thumbnail: "/images/ai-concentration-01-thumb.png"
 category: "集中力・時間管理"
 description: "AIやSNSによって増え続ける『注意力疲労』と『決断疲れ』のメカニズムを解説。情報過多の時代に脳のパフォーマンスを保つヒントを紐解きます。"
 ---
@@ -63,7 +63,7 @@ AIは本当に便利だ。
 これは間違いなく大きな進化だと思う。
 ただ、その一方で、不思議な疲れ方も増えている。
 
-![集中を妨げるデジタルデバイス](/images/ai-concentration-01-thumb.jpg)
+![集中を妨げるデジタルデバイス](/images/ai-concentration-01-thumb.png)
 
 従来のネット検索には、「探す時間（待ち時間）」があり、脳がふと立ち止まる余白があった。
 しかしAIは、こちらが1投げたら、10の精度で即座に答えを返してくる。

@@ -1,6 +1,6 @@
 ﻿---
 layout: ../../layouts/Layout.astro
-title: "AI時代、人は「考える前に疲れる」ようになった｜情報疲れと集中力低下の正体"
+title: "【連載 第1回】AI時代、人は「考える前に疲れる」ようになった｜情報疲れと集中力低下の正体"
 date: "2026年5月20日"
 thumbnail: "/images/ai-concentration-01-thumb.png"
 category: "集中力・時間管理"

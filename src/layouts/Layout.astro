@@ -60,7 +60,25 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/index.html
 	/* デザインは維持 */
 	body { font-family: sans-serif; line-height: 1.8; color: #333; background: #f9fbff; margin: 0; }
 	.content-wrapper { max-width: 800px; margin: 0 auto; padding: 40px 20px; background: white; min-height: 100vh; }
-	.post-header h1 { font-size: 2rem; color: #0f172a; text-align: center; margin-top: 0; }
+	/* ーーー 修正箇所 ーーー */
+	/* 1. まず「スマホ用」のサイズを基本（ベース）にする */
+	.post-header h1 { 
+		font-size: 1.25rem;       /* スマホでは20px相当に縮小して圧迫感をなくす */
+		line-height: 1.4;         /* 行間を少し詰めてタイトルが2〜3行になっても綺麗に収める */
+		color: #0f172a; 
+		text-align: center; 
+		margin-top: 0; 
+		margin-bottom: 15px;      /* 下の公開日との余白を少し調整 */
+	}
+
+	/* 2. 「PC（タブレット以上）」の画面サイズ（768px以上）のときだけ大きくする */
+	@media (min-width: 768px) {
+		.post-header h1 {
+			font-size: 2rem;      /* PCでは元の迫力ある32pxに戻す */
+			line-height: 1.5;
+		}
+	}
+	/* ーーー 修正箇所ここまで ーーー */
 	.meta { text-align: center; color: #64748b; font-size: 0.9rem; margin-bottom: 30px; }
 	.toc-container { background: #fff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 40px; }
 	.toc-container ul { padding-left: 20px; }

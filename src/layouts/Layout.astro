@@ -44,6 +44,26 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/index.html
 			<article class="post-body">
 				<slot />
 			</article>
+
+			{/* 👇 【ここに追加しました】記事がある場合のみコメント欄を表示します */}
+			{frontmatter && (
+				<div class="comments-container" style="margin-top: 60px; border-top: 1px solid #e2e8f0; padding-top: 40px;">
+					<script src="https://giscus.app/client.js"
+							data-repo="beat-creator/self-management-tools"
+							data-repo-id="R_kgDOSYgQ_g"
+							data-category="Announcements"
+							data-category-id="DIC_kwDOSYgQ_s4C9eH0"
+							data-mapping="pathname"
+							data-strict="0"
+							data-reactions-enabled="1"
+							data-emit-metadata="0"
+							data-input-position="bottom"
+							data-theme="preferred_color_scheme"
+							data-lang="ja"
+							crossorigin="anonymous"
+							async is:inline></script>
+				</div>
+			)}
 		</main>
 
 		<footer class="site-footer">
@@ -124,5 +144,5 @@ article img {
     width: auto !important;
     margin: 40px auto;
   }
-}}
+}
 </style>

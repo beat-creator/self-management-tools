@@ -1,7 +1,7 @@
 ﻿---
 layout: ../../layouts/Layout.astro
 title: "【連載 第2回】AIに頼るほど、なぜか頭が働かなくなる｜「考える体力」が失われる時代"
-date: "2026年5月23日"
+date: "2026年5月21日"
 thumbnail: "/images/ai-concentration-02-thumb.png"
 category: "集中力・時間管理"
 description: "AIの劇的な進化の裏で、私たちが失いつつある『考える筋肉』。便利すぎる時代に、脳の主導権を取り戻すための距離感を考えます。"

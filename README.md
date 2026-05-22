@@ -4,7 +4,7 @@
 
 💡 **本番Webサイトはこちら:** [https://secure-toolkit.com/]
 
-![Self-Management Toolkitの画面イメージ](./images/readme-thumb.png)
+![Self-Management Toolkitの画面イメージ](https://secure-toolkit.com/images/readme-thumb.png)
 
 
 ---

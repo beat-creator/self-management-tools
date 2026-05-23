@@ -6,7 +6,7 @@
     <title>N-Back Pro | ワーキングメモリ・脳トレ計算</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="N-Back Pro">
     <link rel="manifest" id="pwa-manifest">
 
@@ -31,32 +31,51 @@
         .timer-bar-container { width: 100%; height: 6px; background: #ddd; position: absolute; top: 0; z-index: 1000; }
         #timer-bar { width: 100%; height: 100%; background: var(--accent); transition: width 0.1s linear; }
 
-        .problem-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; gap: 15px; }
+        .problem-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; gap: 20px; }
         
-        .q-display { display: flex; align-items: baseline; gap: 12px; margin-bottom: 5px; }
-        .q-badge { color: var(--muted); font-size: 1.1rem; font-weight: bold; min-width: 45px; text-align: right; }
-        .formula-main { font-size: 3.4rem; font-weight: 900; color: var(--text); letter-spacing: -1px; }
+        .q-display { display: flex; align-items: center; gap: 16px; margin-bottom: 5px; }
+        .q-badge { color: var(--muted); font-size: 1.2rem; font-weight: bold; min-width: 50px; text-align: right; }
+        
+        /* 🛠️ メイン数式のフォントを等幅に＆サイズ・余白を調整 */
+        .formula-main { 
+            font-size: 3.8rem; 
+            font-weight: 800; 
+            color: var(--text); 
+            letter-spacing: 2px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
 
         .lower-box { 
-            text-align: center; padding: 18px 25px; background: var(--card); 
-            border-radius: 20px; width: 88%; max-width: 340px; border: 2px solid transparent;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: 0.3s;
+            text-align: center; padding: 22px 25px; background: var(--card); 
+            border-radius: 24px; width: 88%; max-width: 340px; border: 2px solid transparent;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04); transition: 0.3s;
         }
-        .waiting-input { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 122, 255, 0.15); animation: blink 1.5s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.75; } }
+        .waiting-input { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 122, 255, 0.18); animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
 
-        .formula-sub { font-size: 1.8rem; font-weight: bold; color: var(--muted); display: flex; align-items: baseline; justify-content: center; gap: 15px; }
-        .ans-badge { font-size: 1rem; color: var(--muted); font-weight: bold; min-width: 40px; text-align: right; }
-        .ans-target { font-size: 2.2rem; color: #ff9500; font-weight: 900; min-width: 30px; text-align: left; }
+        /* 🛠️ 解答エリアも等幅フォントを適用してサイズアップ */
+        .formula-sub { 
+            font-size: 2.2rem; 
+            font-weight: bold; 
+            color: var(--muted); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 15px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+        .ans-badge { font-size: 1.1rem; color: var(--muted); font-weight: bold; min-width: 50px; text-align: right; font-family: -apple-system, sans-serif; }
+        .ans-target { font-size: 2.6rem; color: #ff9500; font-weight: 800; min-width: 35px; text-align: left; }
 
         .num-pad {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-            width: 90vw; max-width: 360px; margin-bottom: 30px; padding: 10px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+            width: 90vw; max-width: 360px; margin-bottom: 35px; padding: 10px;
         }
         .btn {
-            background: var(--card); border: none; border-radius: 12px;
-            color: var(--text); font-size: 1.8rem; font-weight: bold; padding: 16px 0; cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.06); -webkit-tap-highlight-color: transparent;
+            background: var(--card); border: none; border-radius: 16px;
+            color: var(--text); font-size: 1.9rem; font-weight: bold; padding: 18px 0; cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04); -webkit-tap-highlight-color: transparent;
+            transition: background 0.1s;
         }
         .btn:active { background: var(--text); color: white; }
 
@@ -109,7 +128,7 @@
                 
                 <h2>鍛えるメリット</h2>
                 <ul>
-                    <li><b>マルチタスク能力の向上:</b> 仕事中、複数の情報を整理しやすくなります。</li>
+                    <li><b>マルチタスク能力の向上:</b> 工作中、複数の情報を整理しやすくなります。</li>
                     <li><b>学習効率アップ:</b> 読解力や論理的思考力が向上します。</li>
                     <li><b>集中力と感情制御:</b> 注意をコントロールする力がつき、イライラしにくくなります。</li>
                 </ul>
@@ -184,7 +203,6 @@
         let deferredPrompt;
         let installBtn;
 
-        // HTMLが完全に読み込まれてから要素を取得するように修正
         window.addEventListener('DOMContentLoaded', () => {
             installBtn = document.getElementById('pwa-install-btn');
         });
@@ -221,7 +239,6 @@
 
         let n = 2; let isHighSpeed = false; let questions = []; let hitCount = 0; let qIndex = 0; let isWaiting = false; let timerInterval;
 
-        // DOM要素の取得をまとめるオブジェクト（エラー防止のため初期化をDOMロード後に確定）
         let el = {};
         window.addEventListener('DOMContentLoaded', () => {
             el = {

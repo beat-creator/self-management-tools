@@ -20,15 +20,22 @@
     </script>
     <style>
         :root {
-            --bg: #f2f4f7; --text: #1c1c1e; --accent: #007aff;
-            --card: #ffffff; --success: #34c759; --danger: #ff3b30; --muted: #8e8e93;
+            /* ✨ カラーパレットを洗練されたスマートトーンに刷新 */
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%);
+            --text: #1e293b; 
+            --accent: #0284c7;
+            --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+            --card: rgba(255, 255, 255, 0.85); 
+            --success: #22c55e; 
+            --danger: #ef4444; 
+            --muted: #64748b;
         }
         body {
-            background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gradient); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             height: 100svh; margin: 0; overflow: hidden; touch-action: manipulation; user-select: none;
         }
-        .timer-bar-container { width: 100%; height: 6px; background: #ddd; position: absolute; top: 0; z-index: 1000; }
+        .timer-bar-container { width: 100%; height: 6px; background: rgba(0,0,0,0.05); position: absolute; top: 0; z-index: 1000; }
         #timer-bar { width: 100%; height: 100%; background: var(--accent); transition: width 0.1s linear; }
 
         .problem-container { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; gap: 20px; }
@@ -36,7 +43,6 @@
         .q-display { display: flex; align-items: center; gap: 16px; margin-bottom: 5px; }
         .q-badge { color: var(--muted); font-size: 1.2rem; font-weight: bold; min-width: 50px; text-align: right; }
         
-        /* 🛠️ メイン数式のフォントを等幅に＆サイズ・余白を調整 */
         .formula-main { 
             font-size: 3.8rem; 
             font-weight: 800; 
@@ -46,14 +52,13 @@
         }
 
         .lower-box { 
-            text-align: center; padding: 22px 25px; background: var(--card); 
+            text-align: center; padding: 22px 25px; background: #ffffff; 
             border-radius: 24px; width: 88%; max-width: 340px; border: 2px solid transparent;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.04); transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); transition: 0.3s;
         }
-        .waiting-input { border-color: var(--accent); box-shadow: 0 0 20px rgba(0, 122, 255, 0.18); animation: blink 1.5s infinite; }
+        .waiting-input { border-color: var(--accent); box-shadow: 0 0 25px rgba(2, 132, 199, 0.2); animation: blink 1.5s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
 
-        /* 🛠️ 解答エリアも等幅フォントを適用してサイズアップ */
         .formula-sub { 
             font-size: 2.2rem; 
             font-weight: bold; 
@@ -65,42 +70,81 @@
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         }
         .ans-badge { font-size: 1.1rem; color: var(--muted); font-weight: bold; min-width: 50px; text-align: right; font-family: -apple-system, sans-serif; }
-        .ans-target { font-size: 2.6rem; color: #ff9500; font-weight: 800; min-width: 35px; text-align: left; }
+        .ans-target { font-size: 2.6rem; color: #f59e0b; font-weight: 800; min-width: 35px; text-align: left; }
 
         .num-pad {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
             width: 90vw; max-width: 360px; margin-bottom: 35px; padding: 10px;
         }
         .btn {
-            background: var(--card); border: none; border-radius: 16px;
+            background: #ffffff; border: none; border-radius: 18px;
             color: var(--text); font-size: 1.9rem; font-weight: bold; padding: 18px 0; cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04); -webkit-tap-highlight-color: transparent;
-            transition: background 0.1s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.04); -webkit-tap-highlight-color: transparent;
+            transition: transform 0.1s, background 0.1s;
         }
-        .btn:active { background: var(--text); color: white; }
+        .btn:active { transform: scale(0.95); background: #f8fafc; }
 
         /* カウントダウンオーバーレイ */
         #countdown-screen {
-            position: absolute; inset: 0; background: var(--bg); z-index: 150;
+            position: absolute; inset: 0; background: var(--bg-gradient); z-index: 150;
             display: flex; align-items: center; justify-content: center;
         }
         #countdown-text { font-size: 6rem; font-weight: 900; color: var(--accent); animation: pulse 0.5s ease-out; }
         @keyframes pulse { 0% { transform: scale(0.6); opacity: 0; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); } }
 
-        /* スクリーン設定 */
-        .screen { position: absolute; inset: 0; background: var(--bg); z-index: 200; overflow-y: auto; }
-        .screen-content { min-height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; text-align: center; box-sizing: border-box; }
+        /* ✨ スクリーン（スタート画面）の背景とぼかしエフェクト */
+        .screen { position: absolute; inset: 0; background: var(--bg-gradient); z-index: 200; overflow-y: auto; }
+        .screen-content { min-height: 100%; display: flex; flex-direction: column; align-items: center; padding: 50px 24px; text-align: center; box-sizing: border-box; }
         
-        .info-card { background: var(--card); border-radius: 20px; padding: 22px; width: 100%; max-width: 360px; margin: 20px 0; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.05); box-sizing: border-box; }
-        .info-card h2 { font-size: 17px; margin: 0 0 10px 0; color: var(--accent); border-bottom: 2px solid var(--bg); padding-bottom: 5px; }
-        .info-card p, .info-card li { font-size: 13.5px; line-height: 1.6; color: #444; margin-bottom: 10px; }
+        /* ✨ タイトルの立体デザイン化 */
+        .app-title-container { display: flex; gap: 8px; margin-bottom: 8px; }
+        .title-tile {
+            background: #ffffff; color: var(--text); font-size: 2.2rem; font-weight: 900;
+            width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;
+            border-radius: 16px; box-shadow: 0 6px 0 #cbd5e1, 0 10px 20px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .title-tile.pro {
+            background: var(--accent-gradient); color: white; border-color: var(--accent);
+            box-shadow: 0 6px 0 #0369a1, 0 10px 20px rgba(2, 132, 199, 0.2);
+        }
+
+        .info-card { 
+            background: var(--card); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border-radius: 24px; padding: 24px; width: 100%; max-width: 360px; margin: 25px 0; 
+            text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,0.04); box-sizing: border-box;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        .info-card h2 { font-size: 16px; margin: 0 0 12px 0; color: var(--accent); border-bottom: 2px solid rgba(0,0,0,0.03); padding-bottom: 6px; font-weight: 800; }
+        .info-card p, .info-card li { font-size: 13.5px; line-height: 1.6; color: #334155; margin-bottom: 10px; }
         .info-card b { color: var(--text); }
 
-        .footer-guide { font-size: 12px; color: var(--muted); font-weight: bold; margin: 20px 0 40px 0; }
+        .footer-guide { font-size: 12px; color: var(--muted); font-weight: bold; margin: 20px 0 40px 0; letter-spacing: 1px; }
 
-        .start-btn { width: 100%; max-width: 300px; padding: 18px; font-size: 1.2rem; background: var(--text); color: white; border: none; border-radius: 18px; cursor: pointer; font-weight: 900; margin-bottom: 12px; }
-        .pwa-btn { width: 100%; max-width: 300px; padding: 14px; font-size: 1rem; background: var(--card); color: var(--accent); border: 2px solid var(--accent); border-radius: 18px; cursor: pointer; font-weight: bold; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .reset-btn { background: none; border: 1px solid #ccc; color: var(--muted); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+        /* ✨ ぷっくり立体感のあるリッチなグラデーションボタン */
+        .start-btn { 
+            width: 100%; max-width: 300px; padding: 18px; font-size: 1.3rem; 
+            background: var(--accent-gradient); color: white; border: none; 
+            border-radius: 20px; cursor: pointer; font-weight: 900; margin-bottom: 16px;
+            box-shadow: 0 6px 0 #0369a1, 0 12px 24px rgba(2, 132, 199, 0.25);
+            transition: all 0.1s ease;
+            position: relative; top: 0;
+            letter-spacing: 2px;
+        }
+        .start-btn:active {
+            top: 6px;
+            box-shadow: 0 0px 0 #0369a1, 0 4px 10px rgba(2, 132, 199, 0.15);
+        }
+
+        .pwa-btn { 
+            width: 100%; max-width: 300px; padding: 14px; font-size: 1rem; 
+            background: #ffffff; color: var(--accent); border: 2px solid var(--accent); 
+            border-radius: 20px; cursor: pointer; font-weight: bold; margin-bottom: 16px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: transform 0.1s;
+        }
+        .pwa-btn:active { transform: scale(0.98); }
+        .reset-btn { background: none; border: 1px solid #cbd5e1; color: var(--muted); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; transition: background 0.2s; }
+        .reset-btn:hover { background: rgba(0,0,0,0.02); }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -114,9 +158,15 @@
 
     <div id="start-screen" class="screen">
         <div class="screen-content">
-            <h1 style="margin-bottom: 5px; font-weight: 900;">N-Back計算</h1>
-            <div id="level-status" style="font-size: 1.3rem; color: var(--accent); font-weight: 900;">レベル 1</div>
-            <p id="level-desc" style="color: var(--muted); margin-bottom: 20px; font-weight: bold; font-size: 14px;">2-Back (通常速度)</p>
+            <div class="app-title-container">
+                <div class="title-tile">N</div>
+                <div class="title-tile">B</div>
+                <div class="title-tile pro">P</div>
+            </div>
+            <h1 style="margin: 5px 0 10px 0; font-weight: 900; font-size: 1.8rem; letter-spacing: 1px;">N-Back Pro</h1>
+            
+            <div id="level-status" style="font-size: 1.3rem; color: var(--accent); font-weight: 900; margin-bottom: 2px;">レベル 1</div>
+            <p id="level-desc" style="color: var(--muted); margin-bottom: 25px; font-weight: bold; font-size: 14px; letter-spacing: 0.5px;">2-Back (通常速度)</p>
             
             <button class="start-btn" onclick="initGame()">トレーニング開始</button>
             <button id="pwa-install-btn" class="pwa-btn hidden" onclick="triggerPWAInstall()">アプリをインストール</button>
@@ -261,7 +311,7 @@
                 levelStatus: document.getElementById('level-status'),
                 levelDesc: document.getElementById('level-desc')
             };
-            // ★ここを追加：ローカルストレージから前回のレベルを読み込む
+            
             if (localStorage.getItem('n_back_level')) {
                 n = parseInt(localStorage.getItem('n_back_level'));
                 isHighSpeed = (localStorage.getItem('n_back_highspeed') === 'true');
@@ -276,13 +326,12 @@
 
         function resetAll() { 
             n = 2; 
-            isHighSpeed = false;
-            // ★ここを追加：保存された記憶も消去
+            isHighSpeed = false; 
             localStorage.removeItem('n_back_level');
             localStorage.removeItem('n_back_highspeed');
-
             updateMenu(); 
         }
+        
         function updateMenu() {
             if (!el.levelStatus) return;
             el.levelStatus.innerText = `レベル ${isHighSpeed ? (n-1)*2 : (n-1)*2-1}`;
@@ -334,7 +383,7 @@
             isWaiting = true; 
             el.bar.style.width = "100%";
             el.ansBox.classList.remove('waiting-input');
-            el.ansResult.innerText = "?"; el.ansResult.style.color = "#ff9500";
+            el.ansResult.innerText = "?"; el.ansResult.style.color = "#f59e0b";
             el.formulaAns.innerText = "???=";
             el.aNum.innerText = "答?";
 
@@ -381,10 +430,9 @@
             setTimeout(() => { qIndex++; nextStep(); }, 1000); 
         }
 
-       function endGame() {
+        function endGame() {
             const score = Math.floor((hitCount / 20) * 100);
             
-            // ★ここを変更：スコアに応じた判定メッセージを作成
             let judgeMsg = "";
             if (score >= 80) {
                 judgeMsg = "【合格】レベルアップ！🚀";
@@ -394,17 +442,14 @@
                 judgeMsg = "【不合格】レベルダウン…😢\n（60%未満はレベルが下がります）";
             }
 
-            // アラートメッセージに判定を含める
             alert(`終了！ 正解数: ${hitCount}/20 (${score}%)\n\n${judgeMsg}`);
             
-            // 実際のレベル変動ロジック（ここは既存のままノータッチで安全です）
             if (score >= 80) { 
                 if (!isHighSpeed) isHighSpeed = true; else { n++; isHighSpeed = false; }
             } else if (score < 60) { 
                 if (isHighSpeed) isHighSpeed = false; else if (n > 2) { n--; isHighSpeed = true; }
             }
             
-            // ローカルストレージへの保存
             localStorage.setItem('n_back_level', n);
             localStorage.setItem('n_back_highspeed', isHighSpeed);
 

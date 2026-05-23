@@ -1,7 +1,7 @@
 ---
 const { frontmatter, headings } = Astro.props;
 const title = frontmatter?.title || Astro.props.title || "Self-Management Toolkit";
-// 👇 この1行を追加（現在のページがトップページかどうかを判定します）
+// 現在のページがトップページかどうかを判定
 const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/index.html";
 ---
 <!doctype html>
@@ -12,7 +12,7 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/index.html
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<title>{title}</title>
 
-		<script async src="https://www.googletagmanager.com/gtag/js?id=G-489DX1LV2M" is:inline></script>
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-489DX1LV2M"></script>
 		<script is:inline>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
@@ -23,7 +23,6 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/index.html
 	</head>
 	<body>
 		<main class="content-wrapper">
-			{/* ここが「右側」でタイトルと目次を出すプログラムです */}
 			{frontmatter && (
 				<header class="post-header">
 					<h1>{title}</h1>
@@ -33,7 +32,7 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/index.html
 				<nav class="toc-container">
 					<strong>目次</strong>
 					<ul>
-						{/* .md内の「##」を自動で拾ってリストにします */}
+						{/* .md内の「##」を自動で拾ってリスト化 */}
 						{headings && headings.filter(h => h.depth <= 2).map((h) => (
 							<li><a href={`#${h.slug}`}>{h.text}</a></li>
 						))}
@@ -45,9 +44,16 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/index.html
 				<slot />
 			</article>
 
-			{/* 👇 【ここに追加しました】記事がある場合のみコメント欄を表示します */}
 			{frontmatter && (
 				<div class="comments-container" style="margin-top: 60px; border-top: 1px solid #e2e8f0; padding-top: 40px;">
+					
+					<div style="margin-bottom: 24px; padding: 16px; background-color: #18181b; border: 1px solid #27272a; border-radius: 8px; text-align: center;">
+						<p style="margin: 0; font-size: 14px; color: #a1a1aa; line-height: 1.6;">
+							💬 <span style="font-weight: 500; color: #f4f4f5;">コメントを投稿する</span><br />
+							<span style="font-size: 13px;">※スパム防止およびコミュニティの質を維持するため、投稿には<strong>GitHubアカウント</strong>が必要です。</span>
+						</p>
+					</div>
+
 					<script src="https://giscus.app/client.js"
 							data-repo="beat-creator/self-management-tools"
 							data-repo-id="R_kgDOSYgQ_g"
@@ -67,12 +73,9 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/index.html
 		</main>
 
 		<footer class="site-footer">
-			{/* 👇 トップページ以外の場合のみ、リンクを表示する */}
 			{!isHome && <a href="/">トップページへ戻る</a>}
 			<p>© 2026 Self-Management Toolkit</p>
 		</footer>
-
-
 	</body>
 </html>
 
@@ -80,7 +83,7 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/index.html
 	/* デザインは維持 */
 	body { font-family: sans-serif; line-height: 1.8; color: #333; background: #f9fbff; margin: 0; }
 	.content-wrapper { max-width: 800px; margin: 0 auto; padding: 40px 20px; background: white; min-height: 100vh; }
-	/* ーーー 修正箇所 ーーー */
+	
 	/* 1. まず「スマホ用」のサイズを基本（ベース）にする */
 	.post-header h1 { 
 		font-size: 1.25rem;       /* スマホでは20px相当に縮小して圧迫感をなくす */
@@ -98,7 +101,7 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/index.html
 			line-height: 1.5;
 		}
 	}
-	/* ーーー 修正箇所ここまで ーーー */
+
 	.meta { text-align: center; color: #64748b; font-size: 0.9rem; margin-bottom: 30px; }
 	.toc-container { background: #fff; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 40px; }
 	.toc-container ul { padding-left: 20px; }
@@ -119,30 +122,30 @@ const isHome = Astro.url.pathname === "/" || Astro.url.pathname === "/index.html
 		border-radius: 12px;    /* 角を丸くしてアプリの雰囲気に合わせる */
 		box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* 軽い影をつけて「図」として独立させる */
 	}
-/* --- 記事本文の画像最適化 --- */
-article img {
-  /* 1. スマホでは「横幅いっぱい」を基本にする */
-  width: 100% !important; 
-  max-width: 100% !important;
-  height: auto !important;
-  
-  /* 2. 共通のデザイン設定 */
-  display: block;
-  margin: 30px auto;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  /* スマホで縦長すぎないよう、少しだけ高さを制限（好みで調整） */
-  max-height: 80vh; 
-  object-fit: contain;
-}
+	/* --- 記事本文の画像最適化 --- */
+	article img {
+		/* 1. スマホでは「横幅いっぱい」を基本にする */
+		width: 100% !important; 
+		max-width: 100% !important;
+		height: auto !important;
+		
+		/* 2. 共通のデザイン設定 */
+		display: block;
+		margin: 30px auto;
+		border-radius: 12px;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+		/* スマホで縦長すぎないよう、少しだけ高さを制限 */
+		max-height: 80vh; 
+		object-fit: contain;
+	}
 
-/* 3. PC（大きな画面）でのみ、巨大化を抑える */
-@media (min-width: 769px) {
-  article img {
-    /* PCでは縦幅を固定して、横が縮むようにする */
-    max-height: 500px;
-    width: auto !important;
-    margin: 40px auto;
-  }
-}
+	/* 3. PC（大きな画面）でのみ、巨大化を抑える */
+	@media (min-width: 769px) {
+		article img {
+			/* PCでは縦幅を固定して、横が縮むようにする */
+			max-height: 500px;
+			width: auto !important;
+			margin: 40px auto;
+		}
+	}
 </style>

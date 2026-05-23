@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>N-Back Pro | ワーキングメモリ・脳トレ計算</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="N-Back Pro">
+    <link rel="manifest" id="pwa-manifest">
+
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-489DX1LV2M"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -66,6 +72,10 @@
         .footer-guide { font-size: 12px; color: var(--muted); font-weight: bold; margin: 20px 0 40px 0; }
 
         .start-btn { width: 100%; max-width: 300px; padding: 18px; font-size: 1.2rem; background: var(--text); color: white; border: none; border-radius: 18px; cursor: pointer; font-weight: 900; margin-bottom: 12px; }
+        
+        /* インストールボタン用スタイル */
+        .pwa-btn { width: 100%; max-width: 300px; padding: 14px; font-size: 1rem; background: var(--card); color: var(--accent); border: 2px solid var(--accent); border-radius: 18px; cursor: pointer; font-weight: bold; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
         .reset-btn { background: none; border: 1px solid #ccc; color: var(--muted); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
         .hidden { display: none !important; }
     </style>
@@ -81,6 +91,9 @@
             <p id="level-desc" style="color: var(--muted); margin-bottom: 20px; font-weight: bold; font-size: 14px;">2-Back (通常速度)</p>
             
             <button class="start-btn" onclick="initGame()">トレーニング開始</button>
+            
+            <button id="pwa-install-btn" class="pwa-btn hidden" onclick="triggerPWAInstall()">アプリをインストール</button>
+            
             <button class="reset-btn" onclick="resetAll()">レベル1にリセット</button>
 
             <div class="info-card">
@@ -89,7 +102,7 @@
                 
                 <h2>鍛えるメリット</h2>
                 <ul>
-                    <li><b>マルチタスク能力の向上:</b> 仕事中、複数の情報を整理しやすくなります。</li>
+                    <li><b>マルチタスク能力の向上:</b> 工作中、複数の情報を整理しやすくなります。</li>
                     <li><b>学習効率アップ:</b> 読解力や論理的思考力が向上します。</li>
                     <li><b>集中力と感情制御:</b> 注意をコントロールする力がつき、イライラしにくくなります。</li>
                 </ul>
@@ -123,7 +136,7 @@
 
     <div class="num-pad">
         <button class="btn" onclick="handleInput(1)">1</button>
-        <button class="btn" onclick="handleInput(2)">2</button>
+        <button class="btn" onclick="handleInput(2), validationPWAIcon()">2</button>
         <button class="btn" onclick="handleInput(3)">3</button>
         <button class="btn" onclick="handleInput(4)">4</button>
         <button class="btn" onclick="handleInput(5)">5</button>
@@ -136,6 +149,55 @@
     </div>
 
     <script>
+        // ────────────────────────────────────────────────────────
+        // 🚀 PWA（インストール機能）の完全内包システム
+        // ────────────────────────────────────────────────────────
+        const manifestData = {
+            "name": "N-Back Pro",
+            "short_name": "N-Back Pro",
+            "start_url": window.location.href,
+            "display": "standalone",
+            "background_color": "#f2f4f7",
+            "theme_color": "#1c1c1e",
+            "icons": [{
+                "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%231c1c1e'><rect width='512' height='512' rx='112' fill='%231c1c1e'/><text x='50%25' y='64%25' font-size='180' font-weight='900' fill='%23007aff' dominant-baseline='middle' text-anchor='middle'>N</text></svg>",
+                "sizes": "512x512",
+                "type": "image/svg+xml",
+                "purpose": "any"
+            }]
+        };
+        document.getElementById('pwa-manifest').setAttribute('href', 'data:application/manifest+json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(manifestData)))));
+
+        if ('serviceWorker' in navigator) {
+            const swCode = `self.addEventListener('fetch', function(e) { e.respondWith(fetch(e.request).catch(function() { return new Response('Offline'); })); });`;
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(err => console.log('SW registration failed:', err));
+        }
+
+        let deferredPrompt;
+        const installBtn = document.getElementById('pwa-install-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.classList.remove('hidden');
+        });
+
+        function triggerPWAInstall() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    installBtn.classList.add('hidden');
+                }
+                deferredPrompt = null;
+            });
+        }
+        function validationPWAIcon() { return true; }
+
+        // ────────────────────────────────────────────────────────
+        // 既存のゲームロジック（変更なし）
+        // ────────────────────────────────────────────────────────
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function beep(f, d, type='sine') {
             if (audioCtx.state === 'suspended') audioCtx.resume();

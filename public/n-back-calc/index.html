@@ -255,6 +255,11 @@
                 levelStatus: document.getElementById('level-status'),
                 levelDesc: document.getElementById('level-desc')
             };
+            // ★ここを追加：ローカルストレージから前回のレベルを読み込む
+            if (localStorage.getItem('n_back_level')) {
+                n = parseInt(localStorage.getItem('n_back_level'));
+                isHighSpeed = (localStorage.getItem('n_back_highspeed') === 'true');
+            }
             updateMenu();
         });
 
@@ -263,7 +268,15 @@
             if (e.key >= '0' && e.key <= '9') handleInput(parseInt(e.key));
         });
 
-        function resetAll() { n = 2; isHighSpeed = false; updateMenu(); }
+        function resetAll() { 
+            n = 2; 
+            isHighSpeed = false;
+            // ★ここを追加：保存された記憶も消去
+            localStorage.removeItem('n_back_level');
+            localStorage.removeItem('n_back_highspeed');
+
+            updateMenu(); 
+        }
         function updateMenu() {
             if (!el.levelStatus) return;
             el.levelStatus.innerText = `レベル ${isHighSpeed ? (n-1)*2 : (n-1)*2-1}`;
@@ -368,6 +381,11 @@
             if (score >= 80) { if (!isHighSpeed) isHighSpeed = true; else { n++; isHighSpeed = false; }
             } else if (score < 60) { if (isHighSpeed) isHighSpeed = false; else if (n > 2) { n--; isHighSpeed = true; }
             }
+
+            // ★ここを追加：現在のレベルをブラウザに記憶させる
+            localStorage.setItem('n_back_level', n);
+            localStorage.setItem('n_back_highspeed', isHighSpeed);
+
             updateMenu();
             el.startScreen.classList.remove('hidden');
             el.startScreen.scrollTo(0,0);

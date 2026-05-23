@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build && npx sitemap-generator https://secure-toolkit.com --filepath dist/sitemap.xml",
+    "build": "astro build && npx sitemap-generator https://secure-toolkit.com --filepath dist/sitemap.xml && node indexnow.js",
     "preview": "astro preview",
     "astro": "astro"
   },

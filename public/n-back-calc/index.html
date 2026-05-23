@@ -146,6 +146,13 @@
         .reset-btn { background: none; border: 1px solid #cbd5e1; color: var(--muted); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; transition: background 0.2s; }
         .reset-btn:hover { background: rgba(0,0,0,0.02); }
         .hidden { display: none !important; }
+        /* ★ここを追加：離脱ボタンのスタイル */
+        .abort-link {
+            font-size: 0.85rem; color: var(--muted); font-weight: bold;
+            cursor: pointer; padding: 6px 12px; border-radius: 8px;
+            text-decoration: underline; transition: color 0.2s;
+        }
+        .abort-link:active { color: var(--danger); background: rgba(0,0,0,0.03); }
     </style>
 </head>
 <body>
@@ -214,6 +221,10 @@
                 <span id="ans-result" class="ans-target">?</span>
             </div>
         </div>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 5px;">
+        <span class="abort-link" onclick="abortGame()">途中でやめてタイトルに戻る</span>
     </div>
 
     <div class="num-pad">
@@ -429,6 +440,18 @@
             if (isCorrect) { hitCount++; beep(880, 0.1); } else { beep(220, 0.3, 'sawtooth'); }
             setTimeout(() => { qIndex++; nextStep(); }, 1000); 
         }
+
+        // ★ここを追加：途中でゲームを終了する関数
+        function abortGame() {
+            if (confirm("現在のトレーニングを中断して、タイトル画面に戻りますか？")) {
+                clearInterval(timerInterval); // タイマーを確実に止める
+                isWaiting = true;             // 入力受付をブロック
+                updateMenu();                 // メニューの表記を最新に
+                el.startScreen.classList.remove('hidden'); // タイトル画面を表示
+                el.startScreen.scrollTo(0,0);
+            }
+        }
+
 
         function endGame() {
             const score = Math.floor((hitCount / 20) * 100);

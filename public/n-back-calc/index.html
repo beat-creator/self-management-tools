@@ -138,6 +138,12 @@
                     <li><b>問[n]:</b> 今出題されている最新の式です。</li>
                     <li><b>答[n]:</b> 画面が青く光ったとき、<b>n問前の答え</b>を入力します。</li>
                     <li><b>PC操作:</b> キーボードの<b>数字キー（0-9）</b>やテンキーで直接入力できます。</li>
+                    <li><b>レベルの変動条件:</b></li>
+                    <ul style="padding-left: 15px; margin-top: 4px; list-style-type: circle;">
+                        <li><b>80%以上（16問以上正解）:</b> 合格（レベルアップ）</li>
+                        <li><b>60%〜79%（12〜15問正解）:</b> 現状維持</li>
+                        <li><b>60%未満（11問以下正解）:</b> 不合格（レベルダウン）</li>
+                    </ul>
                 </ul>
             </div>
             
@@ -375,14 +381,30 @@
             setTimeout(() => { qIndex++; nextStep(); }, 1000); 
         }
 
-        function endGame() {
+       function endGame() {
             const score = Math.floor((hitCount / 20) * 100);
-            alert(`終了！ 正解数: ${hitCount}/20 (${score}%)`);
-            if (score >= 80) { if (!isHighSpeed) isHighSpeed = true; else { n++; isHighSpeed = false; }
-            } else if (score < 60) { if (isHighSpeed) isHighSpeed = false; else if (n > 2) { n--; isHighSpeed = true; }
+            
+            // ★ここを変更：スコアに応じた判定メッセージを作成
+            let judgeMsg = "";
+            if (score >= 80) {
+                judgeMsg = "【合格】レベルアップ！🚀";
+            } else if (score >= 60) {
+                judgeMsg = "【現状維持】もう一息！👍\n（合格には80%以上が必要です）";
+            } else {
+                judgeMsg = "【不合格】レベルダウン…😢\n（60%未満はレベルが下がります）";
             }
 
-            // ★ここを追加：現在のレベルをブラウザに記憶させる
+            // アラートメッセージに判定を含める
+            alert(`終了！ 正解数: ${hitCount}/20 (${score}%)\n\n${judgeMsg}`);
+            
+            // 実際のレベル変動ロジック（ここは既存のままノータッチで安全です）
+            if (score >= 80) { 
+                if (!isHighSpeed) isHighSpeed = true; else { n++; isHighSpeed = false; }
+            } else if (score < 60) { 
+                if (isHighSpeed) isHighSpeed = false; else if (n > 2) { n--; isHighSpeed = true; }
+            }
+            
+            // ローカルストレージへの保存
             localStorage.setItem('n_back_level', n);
             localStorage.setItem('n_back_highspeed', isHighSpeed);
 

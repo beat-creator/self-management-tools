@@ -60,6 +60,14 @@
         }
         .btn:active { background: var(--text); color: white; }
 
+        /* カウントダウンオーバーレイ */
+        #countdown-screen {
+            position: absolute; inset: 0; background: var(--bg); z-index: 150;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #countdown-text { font-size: 6rem; font-weight: 900; color: var(--accent); animation: pulse 0.5s ease-out; }
+        @keyframes pulse { 0% { transform: scale(0.6); opacity: 0; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); } }
+
         /* スクリーン設定 */
         .screen { position: absolute; inset: 0; background: var(--bg); z-index: 200; overflow-y: auto; }
         .screen-content { min-height: 100%; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; text-align: center; box-sizing: border-box; }
@@ -72,10 +80,7 @@
         .footer-guide { font-size: 12px; color: var(--muted); font-weight: bold; margin: 20px 0 40px 0; }
 
         .start-btn { width: 100%; max-width: 300px; padding: 18px; font-size: 1.2rem; background: var(--text); color: white; border: none; border-radius: 18px; cursor: pointer; font-weight: 900; margin-bottom: 12px; }
-        
-        /* インストールボタン用スタイル */
         .pwa-btn { width: 100%; max-width: 300px; padding: 14px; font-size: 1rem; background: var(--card); color: var(--accent); border: 2px solid var(--accent); border-radius: 18px; cursor: pointer; font-weight: bold; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        
         .reset-btn { background: none; border: 1px solid #ccc; color: var(--muted); padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
         .hidden { display: none !important; }
     </style>
@@ -84,6 +89,10 @@
 
     <div class="timer-bar-container"><div id="timer-bar"></div></div>
 
+    <div id="countdown-screen" class="hidden">
+        <div id="countdown-text">3</div>
+    </div>
+
     <div id="start-screen" class="screen">
         <div class="screen-content">
             <h1 style="margin-bottom: 5px; font-weight: 900;">N-Back計算</h1>
@@ -91,9 +100,7 @@
             <p id="level-desc" style="color: var(--muted); margin-bottom: 20px; font-weight: bold; font-size: 14px;">2-Back (通常速度)</p>
             
             <button class="start-btn" onclick="initGame()">トレーニング開始</button>
-            
             <button id="pwa-install-btn" class="pwa-btn hidden" onclick="triggerPWAInstall()">アプリをインストール</button>
-            
             <button class="reset-btn" onclick="resetAll()">レベル1にリセット</button>
 
             <div class="info-card">
@@ -102,7 +109,7 @@
                 
                 <h2>鍛えるメリット</h2>
                 <ul>
-                    <li><b>マルチタスク能力の向上:</b> 工作中、複数の情報を整理しやすくなります。</li>
+                    <li><b>マルチタスク能力の向上:</b> 仕事中、複数の情報を整理しやすくなります。</li>
                     <li><b>学習効率アップ:</b> 読解力や論理的思考力が向上します。</li>
                     <li><b>集中力と感情制御:</b> 注意をコントロールする力がつき、イライラしにくくなります。</li>
                 </ul>
@@ -150,7 +157,7 @@
 
     <script>
         // ────────────────────────────────────────────────────────
-        // 🚀 PWA（インストール機能）の完全内包システム
+        // PWA（インストール機能）システム
         // ────────────────────────────────────────────────────────
         const manifestData = {
             "name": "N-Back Pro",
@@ -196,7 +203,7 @@
         function validationPWAIcon() { return true; }
 
         // ────────────────────────────────────────────────────────
-        // 既存のゲームロジック（変更なし）
+        // ゲームロジック
         // ────────────────────────────────────────────────────────
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function beep(f, d, type='sine') {
@@ -218,6 +225,8 @@
             ansBox: document.getElementById('ans-box-ui'),
             bar: document.getElementById('timer-bar'),
             startScreen: document.getElementById('start-screen'),
+            countdownScreen: document.getElementById('countdown-screen'),
+            countdownText: document.getElementById('countdown-text'),
             levelStatus: document.getElementById('level-status'),
             levelDesc: document.getElementById('level-desc')
         };
@@ -233,75 +242,16 @@
             el.levelDesc.innerText = `${n}-Back ${isHighSpeed?'(高速)':'(通常速度)'}`;
         }
 
+        // 開始ボタン押下時：カウントダウンを挟むように拡張
         function initGame() { 
             if (audioCtx.state === 'suspended') audioCtx.resume();
             el.startScreen.classList.add('hidden'); 
             questions = []; hitCount = 0; qIndex = 0; 
-            nextStep(); 
-        }
-
-        async function nextStep() {
-            if (qIndex >= 20) { endGame(); return; }
-            isWaiting = true; 
-            el.bar.style.width = "100%";
-            el.ansBox.classList.remove('waiting-input');
-            el.ansResult.innerText = "?"; el.ansResult.style.color = "#ff9500";
-            el.formulaAns.innerText = "???=";
-            el.aNum.innerText = "答?";
-
-            const a = Math.floor(Math.random() * 5) + 1;
-            const b = Math.floor(Math.random() * 4) + 1;
-            let formula, ans;
-            if (Math.random() > 0.5) { formula = `${a}+${b}=`; ans = a+b; }
-            else { formula = `${a+b}-${a}=`; ans = b; }
-
-            questions.push({ formula, ans });
-            el.formulaMem.innerText = formula;
-            el.qNum.innerText = `問${questions.length}`;
             
-            const interval = isHighSpeed ? 2500 : 4000;
-
-            if (questions.length <= n) {
-                setTimeout(nextStep, interval);
-            } else {
-                el.aNum.innerText = `答${qIndex + 1}`;
-                el.ansBox.classList.add('waiting-input'); 
-                isWaiting = false; 
-                startTimer(interval - 300);
-            }
+            // カウントダウン演出開始
+            runCountdown(3, () => {
+                nextStep(); 
+            });
         }
 
-        function startTimer(ms) {
-            let start = Date.now(); clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                let pct = 100 - ((Date.now() - start) / ms * 100);
-                el.bar.style.width = Math.max(0, pct) + "%";
-                if (pct <= 0) { clearInterval(timerInterval); handleInput(-1); }
-            }, 50);
-        }
-
-        function handleInput(val) {
-            if (isWaiting) return; isWaiting = true; clearInterval(timerInterval);
-            el.ansBox.classList.remove('waiting-input');
-            const target = questions[qIndex].ans;
-            const isCorrect = (val === target);
-            el.formulaAns.innerText = questions[qIndex].formula;
-            el.ansResult.innerText = target; 
-            el.ansResult.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
-            if (isCorrect) { hitCount++; beep(880, 0.1); } else { beep(220, 0.3, 'sawtooth'); }
-            setTimeout(() => { qIndex++; nextStep(); }, 1000); 
-        }
-
-        function endGame() {
-            const score = Math.floor((hitCount / 20) * 100);
-            alert(`終了！ 正解数: ${hitCount}/20 (${score}%)`);
-            if (score >= 80) { if (!isHighSpeed) isHighSpeed = true; else { n++; isHighSpeed = false; }
-            } else if (score < 60) { if (isHighSpeed) isHighSpeed = false; else if (n > 2) { n--; isHighSpeed = true; }
-            }
-            updateMenu();
-            el.startScreen.classList.remove('hidden');
-            el.startScreen.scrollTo(0,0);
-        }
-    </script>
-</body>
-</html>
+        //

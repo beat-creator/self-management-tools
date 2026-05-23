@@ -74,7 +74,7 @@
 
         .num-pad {
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-            width: 90vw; max-width: 360px; margin-bottom: 35px; padding: 10px;
+            width: 90vw; max-width: 360px; margin-bottom: 10px; padding: 10px;
         }
         .btn {
             background: #ffffff; border: none; border-radius: 18px;
@@ -149,10 +149,11 @@
         /* ★ここを追加：離脱ボタンのスタイル */
         .abort-link {
             font-size: 0.85rem; color: var(--muted); font-weight: bold;
-            cursor: pointer; padding: 6px 12px; border-radius: 8px;
+            cursor: pointer; padding: 10px 20px; border-radius: 8px;
             text-decoration: underline; transition: color 0.2s;
+            display: inline-block; /* タップ領域をしっかり確保 */
         }
-        .abort-link:active { color: var(--danger); background: rgba(0,0,0,0.03); }
+           .abort-link:active { color: var(--danger); background: rgba(0,0,0,0.03); }
     </style>
 </head>
 <body>
@@ -223,10 +224,6 @@
         </div>
     </div>
 
-    <div style="text-align: center; margin-bottom: 5px;">
-        <span class="abort-link" onclick="abortGame()">途中でやめてタイトルに戻る</span>
-    </div>
-
     <div class="num-pad">
         <button class="btn" onclick="handleInput(1)">1</button>
         <button class="btn" onclick="handleInput(2), validationPWAIcon()">2</button>
@@ -239,6 +236,10 @@
         <button class="btn" onclick="handleInput(9)">9</button>
         <div style="visibility:hidden"></div>
         <button class="btn" onclick="handleInput(0)">0</button>
+    </div>
+
+    <div style="text-align: center; margin-top: 15px; margin-bottom: 10px;">
+        <span class="abort-link" onclick="abortGame()">途中でやめてタイトルに戻る</span>
     </div>
 
     <script>

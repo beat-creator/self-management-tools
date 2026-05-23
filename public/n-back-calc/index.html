@@ -6,7 +6,7 @@
     <title>N-Back Pro | ワーキングメモリ・脳トレ計算</title>
     
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="N-Back Pro">
     <link rel="manifest" id="pwa-manifest">
 
@@ -182,16 +182,21 @@
         }
 
         let deferredPrompt;
-        const installBtn = document.getElementById('pwa-install-btn');
+        let installBtn;
+
+        // HTMLが完全に読み込まれてから要素を取得するように修正
+        window.addEventListener('DOMContentLoaded', () => {
+            installBtn = document.getElementById('pwa-install-btn');
+        });
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            installBtn.classList.remove('hidden');
+            if (installBtn) installBtn.classList.remove('hidden');
         });
 
         function triggerPWAInstall() {
-            if (!deferredPrompt) return;
+            if (!deferredPrompt || !installBtn) return;
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choiceResult) => {
                 if (choiceResult.outcome === 'accepted') {
@@ -216,20 +221,25 @@
 
         let n = 2; let isHighSpeed = false; let questions = []; let hitCount = 0; let qIndex = 0; let isWaiting = false; let timerInterval;
 
-        const el = {
-            formulaMem: document.getElementById('formula-mem'),
-            formulaAns: document.getElementById('formula-ans'),
-            ansResult: document.getElementById('ans-result'),
-            qNum: document.getElementById('q-num'),
-            aNum: document.getElementById('a-num'),
-            ansBox: document.getElementById('ans-box-ui'),
-            bar: document.getElementById('timer-bar'),
-            startScreen: document.getElementById('start-screen'),
-            countdownScreen: document.getElementById('countdown-screen'),
-            countdownText: document.getElementById('countdown-text'),
-            levelStatus: document.getElementById('level-status'),
-            levelDesc: document.getElementById('level-desc')
-        };
+        // DOM要素の取得をまとめるオブジェクト（エラー防止のため初期化をDOMロード後に確定）
+        let el = {};
+        window.addEventListener('DOMContentLoaded', () => {
+            el = {
+                formulaMem: document.getElementById('formula-mem'),
+                formulaAns: document.getElementById('formula-ans'),
+                ansResult: document.getElementById('ans-result'),
+                qNum: document.getElementById('q-num'),
+                aNum: document.getElementById('a-num'),
+                ansBox: document.getElementById('ans-box-ui'),
+                bar: document.getElementById('timer-bar'),
+                startScreen: document.getElementById('start-screen'),
+                countdownScreen: document.getElementById('countdown-screen'),
+                countdownText: document.getElementById('countdown-text'),
+                levelStatus: document.getElementById('level-status'),
+                levelDesc: document.getElementById('level-desc')
+            };
+            updateMenu();
+        });
 
         window.addEventListener('keydown', (e) => {
             if (isWaiting) return;
@@ -238,20 +248,113 @@
 
         function resetAll() { n = 2; isHighSpeed = false; updateMenu(); }
         function updateMenu() {
+            if (!el.levelStatus) return;
             el.levelStatus.innerText = `レベル ${isHighSpeed ? (n-1)*2 : (n-1)*2-1}`;
             el.levelDesc.innerText = `${n}-Back ${isHighSpeed?'(高速)':'(通常速度)'}`;
         }
 
-        // 開始ボタン押下時：カウントダウンを挟むように拡張
         function initGame() { 
             if (audioCtx.state === 'suspended') audioCtx.resume();
             el.startScreen.classList.add('hidden'); 
             questions = []; hitCount = 0; qIndex = 0; 
             
-            // カウントダウン演出開始
             runCountdown(3, () => {
                 nextStep(); 
             });
         }
 
-        //
+        function runCountdown(count, callback) {
+            el.countdownScreen.classList.remove('hidden');
+            
+            function tick() {
+                if (count > 0) {
+                    el.countdownText.innerText = count;
+                    el.countdownText.style.animation = 'none';
+                    el.countdownText.offsetHeight; 
+                    el.countdownText.style.animation = 'pulse 0.5s ease-out';
+                    
+                    beep(440, 0.1); 
+                    count--;
+                    setTimeout(tick, 1000);
+                } else {
+                    el.countdownText.innerText = "START!";
+                    el.countdownText.style.animation = 'none';
+                    el.countdownText.offsetHeight;
+                    el.countdownText.style.animation = 'pulse 0.5s ease-out';
+                    
+                    beep(880, 0.2); 
+                    
+                    setTimeout(() => {
+                        el.countdownScreen.classList.add('hidden');
+                        callback();
+                    }, 800);
+                }
+            }
+            tick();
+        }
+
+        async function nextStep() {
+            if (qIndex >= 20) { endGame(); return; }
+            isWaiting = true; 
+            el.bar.style.width = "100%";
+            el.ansBox.classList.remove('waiting-input');
+            el.ansResult.innerText = "?"; el.ansResult.style.color = "#ff9500";
+            el.formulaAns.innerText = "???=";
+            el.aNum.innerText = "答?";
+
+            const a = Math.floor(Math.random() * 5) + 1;
+            const b = Math.floor(Math.random() * 4) + 1;
+            let formula, ans;
+            if (Math.random() > 0.5) { formula = `${a}+${b}=`; ans = a+b; }
+            else { formula = `${a+b}-${a}=`; ans = b; }
+
+            questions.push({ formula, ans });
+            el.formulaMem.innerText = formula;
+            el.qNum.innerText = `問${questions.length}`;
+            
+            const interval = isHighSpeed ? 2500 : 4000;
+
+            if (questions.length <= n) {
+                setTimeout(nextStep, interval);
+            } else {
+                el.aNum.innerText = `答${qIndex + 1}`;
+                el.ansBox.classList.add('waiting-input'); 
+                isWaiting = false; 
+                startTimer(interval - 300);
+            }
+        }
+
+        function startTimer(ms) {
+            let start = Date.now(); clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                let pct = 100 - ((Date.now() - start) / ms * 100);
+                el.bar.style.width = Math.max(0, pct) + "%";
+                if (pct <= 0) { clearInterval(timerInterval); handleInput(-1); }
+            }, 50);
+        }
+
+        function handleInput(val) {
+            if (isWaiting) return; isWaiting = true; clearInterval(timerInterval);
+            el.ansBox.classList.remove('waiting-input');
+            const target = questions[qIndex].ans;
+            const isCorrect = (val === target);
+            el.formulaAns.innerText = questions[qIndex].formula;
+            el.ansResult.innerText = target; 
+            el.ansResult.style.color = isCorrect ? 'var(--success)' : 'var(--danger)';
+            if (isCorrect) { hitCount++; beep(880, 0.1); } else { beep(220, 0.3, 'sawtooth'); }
+            setTimeout(() => { qIndex++; nextStep(); }, 1000); 
+        }
+
+        function endGame() {
+            const score = Math.floor((hitCount / 20) * 100);
+            alert(`終了！ 正解数: ${hitCount}/20 (${score}%)`);
+            if (score >= 80) { if (!isHighSpeed) isHighSpeed = true; else { n++; isHighSpeed = false; }
+            } else if (score < 60) { if (isHighSpeed) isHighSpeed = false; else if (n > 2) { n--; isHighSpeed = true; }
+            }
+            updateMenu();
+            el.startScreen.classList.remove('hidden');
+            el.startScreen.scrollTo(0,0);
+        }
+    </script>
+</body>
+</html>
